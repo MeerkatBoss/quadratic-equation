@@ -11,30 +11,35 @@ int main(int argc, char **argv)
     double a = 0, b = 0, c = 0;
     int root_count = 0;
     double roots[] = { 0, 0 };
-    if (argc == 4)
+
+    /* input coefficients */
+    if (argc == 4) /* non-interactive mode */
     {
         a = atof(argv[1]);
         b = atof(argv[2]);
         c = atof(argv[3]);
     }
-    else if (argc == 1)
+    else if (argc == 1) /* interactive mode */
     {
         int read = 0;
         printf("This program solves equations ax^2 + bx + c = 0\n");
         printf("Please, enter coefficients a, b and c\n");
         read = scanf(" %lg %lg %lg", &a, &b, &c);
-        if (read != 3)
+        if (read != 3) /* TODO: repeat input until success */
         {
             printf("Please enter 3 (three) numbers\n");
             return 1;
         }
     }
-    else
+    else /* incorrect usage */
     {
         show_help();
         return 1;
     }
+
     root_count = solve_quadratic(a, b, c, roots);
+
+    /* in non-interactive mode output roots with no additional info */
     if (argc == 4)
     {
         if (root_count == 1)
@@ -43,6 +48,7 @@ int main(int argc, char **argv)
             printf("%lg %lg\n", roots[0], roots[1]);
         return 0;
     }
+    /* in interactive mode provide root description */
     if (root_count == 0)
         printf("No real roots\n");
     else if (root_count == 1)
