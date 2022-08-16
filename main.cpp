@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include "quadratic.h"
 
-int compare_double(double, double);
-int solve_quadratic(double, double, double, double*, double*);
 void show_help(void);
 
 int main(int argc, char **argv)
@@ -60,20 +58,6 @@ int main(int argc, char **argv)
     return 0;
 }
 
-int compare_double(double a, double b)
-{
-    /* minimal significant difference between numbers */
-    const double EPS = 1e-8;
-
-    double diff = a - b;
-
-    if (diff < -EPS)
-        return -1;
-    if (diff > EPS)
-        return 1;
-    return 0;
-}
-
 void show_help(void)
 {
     const char* MESSAGE =
@@ -81,30 +65,5 @@ void show_help(void)
         "\tquad - for interactive mode\n"
         "\tquad <a> <b> <c> - to get roots of equation ax^2 + bx + c = 0\n";
     printf("%s", MESSAGE);
-}
-
-int solve_quadratic(double a, double b, double c, double *x1, double *x2)
-{
-    double d = 0;
-    int d_sign = 0;
-    if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
-    {
-        *x1 = -c / b;
-        return 1;
-    }
-    d = b * b - 4 * a * c;
-    d_sign = compare_double(d, 0);
-    if (d_sign < 0) /* d < 0 => no real roots */
-        return 0;
-    if (d_sign == 0) /* single root */
-    {
-        *x1 = -b / (2 * a);
-        return 1;
-    }
-    /* two roots */
-    d = sqrt(d);
-    *x1 = (-b - d) / (2 * a);
-    *x2 = (-b + d) / (2 * a);
-    return 2;
 }
 
