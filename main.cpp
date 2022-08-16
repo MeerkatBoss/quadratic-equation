@@ -3,7 +3,7 @@
 #include "quadratic.h"
 
 void show_help(void);
-void flush_input(void);
+int flush_input(void);
 
 int main(int argc, char **argv)
 {
@@ -31,7 +31,8 @@ int main(int argc, char **argv)
         while (read != 3)
         {
             printf("Please enter 3 (three) numbers\n");
-            flush_input();
+            if (flush_input() != 0)
+                return 0;
             read = scanf(" %lg %lg %lg", &a, &b, &c);
         }
     }
@@ -80,12 +81,15 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
-void flush_input(void)
+int flush_input(void)
 {
     int c = 0;
     do
     {
         c = getchar();
     } while(c != '\n' && c != EOF);
+    return c == EOF
+        ? -1 /* cannot read further */
+        : 0; /* can continue input */
 }
 
