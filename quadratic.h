@@ -11,5 +11,6 @@ enum root_count
 
 int compare_double(double, double);
 enum root_count solve_quadratic(double, double, double, double*, double*);
+enum root_count solve_linear(double, double, double*);
 
 #endif
