@@ -42,8 +42,14 @@ int main(int argc, char **argv)
     }
 
     root_count = solve_quadratic(a, b, c, &x1, &x2);
+
+    /* get rid of strange values '-0'*/
+    if (compare_double(x1, 0) == 0)
+        x1 = 0;
+    if (compare_double(x2, 0) == 0)
+        x2 = 0;
     
-    switch (root_count)
+    switch (root_count) /* Determine output format */
     {
         case 0:
             printf("No real roots\n");
@@ -57,7 +63,7 @@ int main(int argc, char **argv)
         case TOO_MANY_ROOTS:
             printf("Infinetely many roots (x can be any real number)\n");
             break;
-        default:
+        default: /* Shouldn't be executed */
             printf("Unknown error\n");
             return 2;
             break;
