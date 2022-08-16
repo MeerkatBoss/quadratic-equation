@@ -1,4 +1,6 @@
 #include <math.h>
+#include <assert.h>
+#include <errno.h>
 #include "quadratic.h"
 
 int compare_double(double a, double b)
@@ -20,10 +22,26 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
     double d = 0;
     int d_sign = 0;
 
-    if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
+    /* chech for valid pointers */
+    assert(x1 != NULL);
+    assert(x2 != NULL);
+    if (x1 == NULL || x2 == NULL)
     {
-        return solve_linear(b, c, x1);
+        errno = EDESTADDRREQ;
+        return NO_ROOTS;
     }
+
+    /* check for valid coefficients */
+    assert(isfinite(a) && isfinite(b) && isfinite(c));
+    if (!isfinite(a) || !isfinite(b) || !isfinite(c))
+    {
+        errno = EINVAL;
+        return NO_ROOTS;
+    }
+
+
+    if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
+        return solve_linear(b, c, x1);
 
     d = b * b - 4 * a * c;
     d_sign = compare_double(d, 0);
@@ -44,6 +62,22 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
 
 enum root_count solve_linear(double a, double b, double *x)
 {
+    /* check for valid pointer */
+    assert(x != NULL);
+    if (x == NULL)
+    {
+        errno = EDESTADDRREQ;
+        return NO_ROOTS;
+    }
+
+    /* check for valid coefficients */
+    assert(isfinite(a) && isfinite(b));
+    if (!isfinite(a) || !isfinite(b))
+    {
+        errno = EINVAL;
+        return NO_ROOTS;
+    }
+
     if (compare_double(a, 0) == 0) /* no x in equation */
         return compare_double(b, 0) == 0
             ? INF_ROOTS

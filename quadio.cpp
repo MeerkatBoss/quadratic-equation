@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <assert.h>
+#include <errno.h>
 #include "quadio.h"
 
 void show_help(void)
@@ -18,7 +20,7 @@ int flush_input(void)
         switch(getchar())
         {
             case EOF:
-                return -1;
+                return EOF;
             case '\n':
                 return 0;
             default:
@@ -29,8 +31,8 @@ int flush_input(void)
 
 int parse_args(int argc, char** argv, ...)
 {
-    va_list args;
-    int i;
+    va_list args = {};
+    int i = 0;
 
     va_start(args, argc - 1);
 
@@ -39,6 +41,23 @@ int parse_args(int argc, char** argv, ...)
         double *arg = NULL;
 
         arg = va_arg(args, double*);
+
+        /* check for valid vararg */
+        assert(arg != NULL);
+        if (arg == NULL)
+        {
+            errno = EDESTADDRREQ;
+            return -1;
+        }
+
+        /* check that argv is long enough */
+        assert(argv[i] != NULL);
+        if (argv[i] == NULL)
+        {
+            errno = EINVAL;
+            return -1;
+        }
+
         if (sscanf(argv[i], " %lg", arg) != 1)
             return -1;
     }
@@ -48,12 +67,23 @@ int parse_args(int argc, char** argv, ...)
 
 int interactive_input(double *a, double *b, double *c)
 {
+    /* check for valid pointers */
+    assert(a != NULL && b != NULL && c != NULL);
+    if (a == NULL || b == NULL || c == NULL)
+    {
+        errno = EDESTADDRREQ;
+        return -2;
+    }
+
+    /* prompt */
     printf("This program solves equations ax^2 + bx + c = 0\n");
     printf("Please, enter coefficients a, b and c\n");
+
+    /* repeat input until success */
     while (scanf(" %lg %lg %lg", a, b, c) != 3)
     {
-        if (flush_input() != 0)
-            return -1;
+        if (flush_input() == EOF) /* no further input */
+            return EOF;
         printf("Please enter 3 (three) numbers\n");
     }
     return 0;
