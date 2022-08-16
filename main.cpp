@@ -3,6 +3,7 @@
 #include "quadratic.h"
 
 void show_help(void);
+void flush_input(void);
 
 int main(int argc, char **argv)
 {
@@ -13,9 +14,13 @@ int main(int argc, char **argv)
     /* input coefficients */
     if (argc == 4) /* non-interactive mode */
     {
-        a = atof(argv[1]);
-        b = atof(argv[2]);
-        c = atof(argv[3]);
+        if (sscanf(argv[1], " %lg", &a) != 1 ||
+            sscanf(argv[2], " %lg", &b) != 1 ||
+            sscanf(argv[3], " %lg", &c) != 1)
+        {
+            show_help();
+            return 1;
+        }
     }
     else if (argc == 1) /* interactive mode */
     {
@@ -23,10 +28,11 @@ int main(int argc, char **argv)
         printf("This program solves equations ax^2 + bx + c = 0\n");
         printf("Please, enter coefficients a, b and c\n");
         read = scanf(" %lg %lg %lg", &a, &b, &c);
-        if (read != 3) /* TODO: repeat input until success */
+        while (read != 3)
         {
             printf("Please enter 3 (three) numbers\n");
-            return 1;
+            flush_input();
+            read = scanf(" %lg %lg %lg", &a, &b, &c);
         }
     }
     else /* incorrect usage */
@@ -62,8 +68,17 @@ void show_help(void)
 {
     const char* MESSAGE =
         "Usage:\n"
-        "\tquad - for interactive mode\n"
-        "\tquad <a> <b> <c> - to get roots of equation ax^2 + bx + c = 0\n";
+        "\tquad - to launch program in interactive mode\n"
+        "\tquad <a> <b> <c> - to get roots of an equation ax^2 + bx + c = 0\n";
     printf("%s", MESSAGE);
+}
+
+void flush_input(void)
+{
+    int c = 0;
+    do
+    {
+        c = getchar();
+    } while(c != '\n' && c != EOF);
 }
 
