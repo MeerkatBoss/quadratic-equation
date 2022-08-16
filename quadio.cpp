@@ -13,14 +13,18 @@ void show_help(void)
 
 int flush_input(void)
 {
-    int c = 0;
-    do
+    while (1)
     {
-        c = getchar();
-    } while(c != '\n' && c != EOF);
-    return c == EOF
-        ? -1 /* cannot read further */
-        : 0; /* can continue input */
+        switch(getchar())
+        {
+            case EOF:
+                return -1;
+            case '\n':
+                return 0;
+            default:
+                break;
+        }
+    }
 }
 
 int parse_args(int argc, char** argv, ...)
@@ -44,16 +48,13 @@ int parse_args(int argc, char** argv, ...)
 
 int interactive_input(double *a, double *b, double *c)
 {
-    int read = 0;
     printf("This program solves equations ax^2 + bx + c = 0\n");
     printf("Please, enter coefficients a, b and c\n");
-    read = scanf(" %lg %lg %lg", a, b, c);
-    while (read != 3)
+    while (scanf(" %lg %lg %lg", a, b, c) != 3)
     {
         if (flush_input() != 0)
             return -1;
         printf("Please enter 3 (three) numbers\n");
-        read = scanf(" %lg %lg %lg", a, b, c);
     }
     return 0;
 }
