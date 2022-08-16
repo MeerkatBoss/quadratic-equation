@@ -52,22 +52,21 @@ int main(int argc, char **argv)
     
     switch (root_count) /* Determine output format */
     {
-        case 0:
+        case NO_ROOTS:
             printf("No real roots\n");
             break;
-        case 1:
+        case SINGLE_ROOT:
             printf("Single root: %lg\n", x1);
             break;
-        case 2:
+        case TWO_ROOTS:
             printf("Two roots: %lg and %lg\n", x1, x2);
             break;
-        case TOO_MANY_ROOTS:
+        case INF_ROOTS:
             printf("Infinitely many roots (x can be any real number)\n");
             break;
         default: /* Shouldn't be executed */
             printf("Unknown error\n");
             return 2;
-            break;
     }
     return 0;
 }
