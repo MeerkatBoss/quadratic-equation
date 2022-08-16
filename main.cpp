@@ -30,9 +30,9 @@ int main(int argc, char **argv)
         read = scanf(" %lg %lg %lg", &a, &b, &c);
         while (read != 3)
         {
-            printf("Please enter 3 (three) numbers\n");
             if (flush_input() != 0)
                 return 0;
+            printf("Please enter 3 (three) numbers\n");
             read = scanf(" %lg %lg %lg", &a, &b, &c);
         }
     }
