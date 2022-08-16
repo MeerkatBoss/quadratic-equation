@@ -21,6 +21,12 @@ int solve_quadratic(double a, double b, double c, double *x1, double *x2)
     int d_sign = 0;
     if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
     {
+        if (compare_double(b, 0) == 0)
+        {
+            return compare_double(c, 0) == 0
+                ? TOO_MANY_ROOTS /* infinetely many roots */
+                : 0; /* no roots */
+        }
         *x1 = -c / b;
         return 1;
     }

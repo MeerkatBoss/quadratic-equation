@@ -42,25 +42,26 @@ int main(int argc, char **argv)
     }
 
     root_count = solve_quadratic(a, b, c, &x1, &x2);
-
-    /* in non-interactive mode output roots with no additional info */
-    if (argc == 4)
+    
+    switch (root_count)
     {
-        if (root_count == 1)
-            printf("%lg\n", x1);
-        else if (root_count == 2)
-            printf("%lg %lg\n", x1, x2);
-        else
-            printf("\n");
-        return 0;
+        case 0:
+            printf("No real roots\n");
+            break;
+        case 1:
+            printf("Single root: %lg\n", x1);
+            break;
+        case 2:
+            printf("Two roots: %lg and %lg\n", x1, x2);
+            break;
+        case TOO_MANY_ROOTS:
+            printf("Infinetely many roots (x can be any real number)\n");
+            break;
+        default:
+            printf("Unknown error\n");
+            return 2;
+            break;
     }
-    /* in interactive mode provide root description */
-    if (root_count == 0)
-        printf("No real roots\n");
-    else if (root_count == 1)
-        printf("Single root: %lg\n", x1);
-    else
-        printf("Two roots: %lg and %lg\n", x1, x2);
     return 0;
 }
 
