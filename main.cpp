@@ -61,7 +61,7 @@ int main(int argc, char **argv)
             printf("Two roots: %lg and %lg\n", x1, x2);
             break;
         case TOO_MANY_ROOTS:
-            printf("Infinetely many roots (x can be any real number)\n");
+            printf("Infinitely many roots (x can be any real number)\n");
             break;
         default: /* Shouldn't be executed */
             printf("Unknown error\n");
