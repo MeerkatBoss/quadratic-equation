@@ -19,12 +19,15 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
 {
     double d = 0;
     int d_sign = 0;
+
     if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
     {
         return solve_linear(b, c, x1);
     }
+
     d = b * b - 4 * a * c;
     d_sign = compare_double(d, 0);
+
     if (d_sign < 0) /* d < 0 => no real roots */
         return NO_ROOTS;
     if (d_sign == 0) /* single root */
@@ -45,6 +48,7 @@ enum root_count solve_linear(double a, double b, double *x)
         return compare_double(b, 0) == 0
             ? INF_ROOTS
             : NO_ROOTS;
+
     *x = -b / a;
     return SINGLE_ROOT;
 }
