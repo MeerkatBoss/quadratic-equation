@@ -3,14 +3,14 @@
 #include <math.h>
 
 int compare_double(double, double);
-int solve_quadratic(double, double, double, double[]);
+int solve_quadratic(double, double, double, double*, double*);
 void show_help(void);
 
 int main(int argc, char **argv)
 {
     double a = 0, b = 0, c = 0;
     int root_count = 0;
-    double roots[] = { 0, 0 };
+    double x1 = 0, x2 = 0;
 
     /* input coefficients */
     if (argc == 4) /* non-interactive mode */
@@ -37,24 +37,26 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    root_count = solve_quadratic(a, b, c, roots);
+    root_count = solve_quadratic(a, b, c, &x1, &x2);
 
     /* in non-interactive mode output roots with no additional info */
     if (argc == 4)
     {
         if (root_count == 1)
-            printf("%lg\n", roots[0]);
+            printf("%lg\n", x1);
         else if (root_count == 2)
-            printf("%lg %lg\n", roots[0], roots[1]);
+            printf("%lg %lg\n", x1, x2);
+        else
+            printf("\n");
         return 0;
     }
     /* in interactive mode provide root description */
     if (root_count == 0)
         printf("No real roots\n");
     else if (root_count == 1)
-        printf("Single root: %lg\n", roots[0]);
+        printf("Single root: %lg\n", x1);
     else
-        printf("Two roots: %lg and %lg\n", roots[0], roots[1]);
+        printf("Two roots: %lg and %lg\n", x1, x2);
     return 0;
 }
 
@@ -81,13 +83,13 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
-int solve_quadratic(double a, double b, double c, double roots[])
+int solve_quadratic(double a, double b, double c, double *x1, double *x2)
 {
     double d = 0;
     int d_sign = 0;
     if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
     {
-        roots[0] = -c / b;
+        *x1 = -c / b;
         return 1;
     }
     d = b * b - 4 * a * c;
@@ -96,13 +98,13 @@ int solve_quadratic(double a, double b, double c, double roots[])
         return 0;
     if (d_sign == 0) /* single root */
     {
-        roots[0] = -b / (2 * a);
+        *x1 = -b / (2 * a);
         return 1;
     }
     /* two roots */
     d = sqrt(d);
-    roots[0] = (-b - d) / (2 * a);
-    roots[1] = (-b + d) / (2 * a);
+    *x1 = (-b - d) / (2 * a);
+    *x2 = (-b + d) / (2 * a);
     return 2;
 }
 
