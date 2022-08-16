@@ -47,7 +47,7 @@ int parse_args(int argc, char** argv, ...)
         if (arg == NULL)
         {
             errno = EDESTADDRREQ;
-            return -1;
+            return -2;
         }
 
         /* check that argv is long enough */
@@ -55,11 +55,11 @@ int parse_args(int argc, char** argv, ...)
         if (argv[i] == NULL)
         {
             errno = EINVAL;
-            return -1;
+            return -2;
         }
 
         if (sscanf(argv[i], " %lg", arg) != 1)
-            return -1;
+            return -2;
     }
 
     return 0;
@@ -107,7 +107,7 @@ int print_solutions(enum root_count n_roots, double x1, double x2)
             break;
         default:
             printf("Unknown error\n");
-            return 2;
+            return -2;
     }
     return 0;
 }

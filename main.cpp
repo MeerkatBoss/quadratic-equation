@@ -1,7 +1,17 @@
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "quadratic.h"
 #include "quadio.h"
+
+enum status_code
+{
+    RETURN_SUCCESS = 0,
+    RETURN_BAD_INPUT = 1,
+    RETURN_RUNTIME_ERROR = 2
+};
+
+void check_error(void);
 
 int main(int argc, char **argv)
 {
@@ -15,13 +25,9 @@ int main(int argc, char **argv)
         errno = 0;
         if (parse_args(argc, argv, &a, &b, &c) != 0)
         {
-            if (errno) /* unknown error */
-            {
-                perror("Runtime error");
-                return 2;
-            }
+            check_error();
             show_help();
-            return 1;
+            return RETURN_BAD_INPUT;
         }
     }
     else if (argc == 1) /* interactive mode */
@@ -29,16 +35,12 @@ int main(int argc, char **argv)
         errno = 0;
         if (interactive_input(&a, &b, &c) == EOF)
             return 0;
-        if (errno) /* unknown error */
-        {
-            perror("Runtime error");
-            return 2;
-        }
+        check_error();
     }
     else /* incorrect usage */
     {
         show_help();
-        return 1;
+        return RETURN_BAD_INPUT;
     }
 
     errno = 0;
@@ -46,20 +48,21 @@ int main(int argc, char **argv)
     if (errno == EINVAL) /* invalid coefficients */
     {
         show_help();
-        return 1;
+        return RETURN_BAD_INPUT;
     }
-    if (errno) /* unknown error */
-    {
-        perror("Runtime error");
-        return 2;
-    }
+    check_error();
 
-    /* get rid of strange values '-0'*/
-    if (compare_double(x1, 0) == 0)
-        x1 = 0;
-    if (compare_double(x2, 0) == 0)
-        x2 = 0;
+    if (print_solutions(n_roots, x1, x2) != 0)
+        return RETURN_RUNTIME_ERROR;
 
-    return print_solutions(n_roots, x1, x2);
+    return RETURN_SUCCESS;
 }
 
+void check_error(void)
+{
+    if (errno)
+    {
+        perror("Runtime error");
+        exit(RETURN_RUNTIME_ERROR);
+    }
+}

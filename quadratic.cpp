@@ -57,6 +57,14 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
     d = sqrt(d);
     *x1 = (-b - d) / (2 * a);
     *x2 = (-b + d) / (2 * a);
+
+    /* get rid of strange values '-0'*/
+    if (compare_double(*x1, 0) == 0)
+        *x1 = 0;
+    if (compare_double(*x2, 0) == 0)
+        *x2 = 0;
+
+
     return TWO_ROOTS;
 }
 
