@@ -14,11 +14,11 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
-int flush_input(void)
+int flush_input(FILE *fd)
 {
     while (1)
     {
-        switch(getchar())
+        switch(getc(fd))
         {
             case EOF:
                 return EOF;
@@ -82,7 +82,7 @@ int interactive_input(double *a, double *b, double *c)
     /* repeat input until success */
     while (scanf(" %lg %lg %lg", a, b, c) != 3)
     {
-        if (flush_input() == EOF) /* no further input */
+        if (flush_input(stdin) == EOF) /* no further input */
             return EOF;
         printf("Please enter 3 (three) numbers\n");
     }
