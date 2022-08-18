@@ -29,7 +29,9 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
     }
 
     /* check for valid coefficients */
-    assert(isfinite(a) && isfinite(b) && isfinite(c));
+    assert(isfinite(a));
+    assert(isfinite(b));
+    assert(isfinite(c));
     if (!isfinite(a) || !isfinite(b) || !isfinite(c))
     {
         errno = EINVAL;

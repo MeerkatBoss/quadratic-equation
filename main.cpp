@@ -41,11 +41,10 @@ int main(int argc, char **argv)
         return RETURN_BAD_INPUT;
     }
 
-    enum root_count n_roots = NO_ROOTS;
     double x1 = 0, x2 = 0;
 
     errno = 0;
-    n_roots = solve_quadratic(a, b, c, &x1, &x2);
+    enum root_count n_roots = solve_quadratic(a, b, c, &x1, &x2);
     if (errno == EINVAL) /* invalid coefficients */
     {
         show_help();
