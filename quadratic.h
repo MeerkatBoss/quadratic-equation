@@ -3,10 +3,10 @@
 
 enum root_count
 {
-    NO_ROOTS,
-    SINGLE_ROOT,
-    TWO_ROOTS,
-    INF_ROOTS
+    NO_ROOTS    =  0,
+    SINGLE_ROOT =  1,
+    TWO_ROOTS   =  2,
+    INF_ROOTS   = -1
 };
 
 int compare_double(double, double);

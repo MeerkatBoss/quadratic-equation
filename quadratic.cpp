@@ -19,9 +19,6 @@ int compare_double(double a, double b)
 
 enum root_count solve_quadratic(double a, double b, double c, double *x1, double *x2)
 {
-    double d = 0;
-    int d_sign = 0;
-
     /* chech for valid pointers */
     assert(x1 != NULL);
     assert(x2 != NULL);
@@ -39,12 +36,12 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
         return NO_ROOTS;
     }
 
-
     if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
         return solve_linear(b, c, x1);
 
-    d = b * b - 4 * a * c;
-    d_sign = compare_double(d, 0);
+    /* solve quadratic */
+    double d = b * b - 4 * a * c;
+    int d_sign = compare_double(d, 0);
 
     if (d_sign < 0) /* d < 0 => no real roots */
         return NO_ROOTS;

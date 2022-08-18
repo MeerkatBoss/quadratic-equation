@@ -10,6 +10,7 @@ void show_help(void)
         "Usage:\n"
         "\tquad - to launch program in interactive mode\n"
         "\tquad <a> <b> <c> - to get roots of an equation ax^2 + bx + c = 0\n";
+
     printf("%s", MESSAGE);
 }
 
@@ -32,11 +33,10 @@ int flush_input(void)
 int parse_args(int argc, char** argv, ...)
 {
     va_list args = {};
-    int i = 0;
 
     va_start(args, argc - 1);
 
-    for (i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         double *arg = NULL;
 

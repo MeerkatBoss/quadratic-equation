@@ -6,9 +6,9 @@
 
 enum status_code
 {
-    RETURN_SUCCESS = 0,
-    RETURN_BAD_INPUT = 1,
-    RETURN_RUNTIME_ERROR = 2
+    RETURN_SUCCESS          = 0,
+    RETURN_BAD_INPUT        = 1,
+    RETURN_RUNTIME_ERROR    = 2
 };
 
 void check_error(void);
@@ -16,8 +16,6 @@ void check_error(void);
 int main(int argc, char **argv)
 {
     double a = 0, b = 0, c = 0;
-    enum root_count n_roots = NO_ROOTS;
-    double x1 = 0, x2 = 0;
 
     /* input coefficients */
     if (argc == 4) /* non-interactive mode */
@@ -42,6 +40,9 @@ int main(int argc, char **argv)
         show_help();
         return RETURN_BAD_INPUT;
     }
+
+    enum root_count n_roots = NO_ROOTS;
+    double x1 = 0, x2 = 0;
 
     errno = 0;
     n_roots = solve_quadratic(a, b, c, &x1, &x2);
