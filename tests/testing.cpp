@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <errno.h>
 #include "../src/quadio.h"
@@ -11,7 +12,7 @@ struct TestFile
     int line;
 };
 
-TestFile *test_file(char *path)
+TestFile *test_file(const char *path)
 {
     assert(path != NULL);
     if (path == NULL)
@@ -21,7 +22,7 @@ TestFile *test_file(char *path)
     }
 
     TestFile *tf = NULL;
-    tf = (TestFile *) calloc(1, sizeof tf);
+    tf = (TestFile *) calloc(1, sizeof(TestFile));
 
     if (tf == NULL) /* failed to allocate, errno set by malloc */
         return NULL;
@@ -53,7 +54,7 @@ int get_case_number(TestFile *tf)
     return tf->line;
 }
 
-int next_case(TestFile *tf, int bufsize, char *buffer)
+int next_test_case(TestFile *tf, int bufsize, char *buffer)
 {
     assert(tf != NULL);
     if (tf == NULL)
@@ -84,7 +85,7 @@ int next_case(TestFile *tf, int bufsize, char *buffer)
 
     if (feof(tf->fd)) /* last line read */
         return EOF;
-    if (buffer[bufsize - 2] != '\n') /* did not read to the end */
+    if (strchr(buffer, '\n') == NULL) /* did not read to the end */
     {
         flush_input(tf->fd);
         errno = EOVERFLOW;
