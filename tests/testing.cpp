@@ -5,7 +5,7 @@
 #include "../src/quadio.h"
 #include "testing.h"
 
-struct _test_file
+struct TestFile
 {
     FILE *fd;
     int line;
@@ -21,7 +21,7 @@ TestFile *test_file(char *path)
     }
 
     TestFile *tf = NULL;
-    tf = (TestFile *) malloc(sizeof tf);
+    tf = (TestFile *) calloc(1, sizeof tf);
 
     if (tf == NULL) /* failed to allocate, errno set by malloc */
         return NULL;
@@ -53,7 +53,7 @@ int get_case_number(TestFile *tf)
     return tf->line;
 }
 
-int next_case(TestFile *tf, unsigned int bufsize, char *buffer)
+int next_case(TestFile *tf, int bufsize, char *buffer)
 {
     assert(tf != NULL);
     if (tf == NULL)
