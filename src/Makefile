@@ -21,6 +21,11 @@ COPTIONS=-fcheck-new\
 }unreachable,vla-bound,vptr\
 -pie -Wlarger-than=8192 -Wstack-usage=8192
 
+DEBUG?=0
+
+ifeq ($(DEBUG), 0)
+	CFLAGS+="-D NDEBUG"
+endif
 
 all: bin/quad
 

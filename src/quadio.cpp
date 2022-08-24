@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <errno.h>
+#include <math.h>
 #include "quadio.h"
 
 void show_help(void)
@@ -9,7 +10,8 @@ void show_help(void)
     const char* MESSAGE =
         "Usage:\n"
         "\tquad - to launch program in interactive mode\n"
-        "\tquad <a> <b> <c> - to get roots of an equation ax^2 + bx + c = 0\n";
+        "\tquad <a> <b> <c> - to get roots of an equation ax^2 + bx + c = 0\n"
+        "\tquad -h - to get this message\n";
 
     printf("%s", MESSAGE);
 }
@@ -58,7 +60,7 @@ int parse_args(int argc, char** argv, ...)
             return -2;
         }
 
-        if (sscanf(argv[i], " %lg", arg) != 1)
+        if (sscanf(argv[i], " %lg", arg) != 1 || !isfinite(*arg))
             return -2;
     }
 
@@ -80,7 +82,10 @@ int interactive_input(double *a, double *b, double *c)
     printf("Please, enter coefficients a, b and c\n");
 
     /* repeat input until success */
-    while (scanf(" %lg %lg %lg", a, b, c) != 3)
+    while (scanf(" %lg %lg %lg", a, b, c) != 3 ||
+            ! isfinite(*a) ||
+            ! isfinite(*b) ||
+            ! isfinite(*c))
     {
         if (flush_input(stdin) == EOF) /* no further input */
             return EOF;

@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "quadratic.h"
 #include "quadio.h"
 
@@ -28,6 +29,15 @@ int main(int argc, char **argv)
             return RETURN_BAD_INPUT;
         }
     }
+    else if (argc == 2)
+    {
+        if (strcmp(argv[1], "-h") == 0)
+        {
+            show_help();
+            return 0;
+        }
+        return RETURN_BAD_INPUT;
+    }
     else if (argc == 1) /* interactive mode */
     {
         errno = 0;
@@ -46,10 +56,7 @@ int main(int argc, char **argv)
     errno = 0;
     enum root_count n_roots = solve_quadratic(a, b, c, &x1, &x2);
     if (errno == EINVAL) /* invalid coefficients */
-    {
-        show_help();
-        return RETURN_BAD_INPUT;
-    }
+        return RETURN_RUNTIME_ERROR;
     check_error();
 
     if (print_solutions(n_roots, x1, x2) != 0)
