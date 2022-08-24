@@ -59,7 +59,10 @@ int solve_quadratic(double a, double b, double c,
     int d_sign = compare_double(d, 0);
 
     if (d_sign < 0) /* d < 0 => no real roots */
-        return NO_ROOTS;
+    {
+        result->nroots = NO_ROOTS;
+        return SOLVE_SUCCESS;
+    }
     if (d_sign == 0) /* single root */
     {
         result->roots[0] = -b / (2 * a);
