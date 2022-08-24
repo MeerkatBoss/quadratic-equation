@@ -21,21 +21,16 @@ TestFile *test_file(const char *path)
         return NULL;
     }
 
-    TestFile *tf = NULL;
-    tf = (TestFile *) calloc(1, sizeof(TestFile));
+    TestFile *tf = (TestFile *) calloc(1, sizeof(TestFile));
 
     if (tf == NULL) /* failed to allocate, errno set by malloc */
         return NULL;
 
-    tf->line = 0;
-    tf->fd = NULL;
-    tf->fd = fopen(path, "r");
+    *tf = { .fd = fopen(path, "r"), .line = 0 };
 
     if (tf->fd == NULL) /* failed to open file, errno set by fopen */
     {
-        int tmp = errno;
         free(tf);
-        errno = tmp;
         return NULL;
     }
 
@@ -87,7 +82,7 @@ int next_test_case(TestFile *tf, int bufsize, char *buffer)
         return EOF;
     if (strchr(buffer, '\n') == NULL) /* did not read to the end */
     {
-        flush_input(tf->fd);
+        skip_line(tf->fd);
         errno = EOVERFLOW;
         return -2;
     }

@@ -25,6 +25,76 @@ enum root_count
 };
 
 /**
+ * @brief Enum representing status of solving
+ * equation
+ */
+enum solve_status
+{
+    SOLVE_SUCCESS =  0, /*!< Equation solved successfully */
+    SOLVE_ERROR   = -1  /*!< Failed to solve equation */
+};
+
+/**
+ * @brief Base struct for storing equation solving result
+ * @note DO NOT change order of fields. Having roots[] at end
+ * and nroots in the beginning is critical for using in generic case
+ */
+typedef struct
+{
+    enum root_count nroots;
+    double roots[0];
+} EquationResultBase;
+
+
+/**
+ * @brief Typename for static equation solving result
+ * @param num - number of roots of equation
+ */
+#define EQUATION_RESULT(num) EquationResult##num
+
+/**
+ * @brief Struct for storing equation result with compile-time
+ * known number of roots
+ * @param num - number of roots
+ */
+#define DEFINE_EQUATION_RESULT(num)                                         \
+    typedef struct                                                          \
+    {                                                                       \
+        union {                                                             \
+            EquationResultBase base; /*!< base struct (used for upcast) */  \
+            enum root_count nroots; /*!< number of roots */                 \
+        };                                                                  \
+        double roots[num]; /*!< roots array */                              \
+    } EquationResult##num
+
+/**
+ * @brief Store linear equation roots
+ */
+DEFINE_EQUATION_RESULT(1);
+
+/**
+ * @brief Store quadratic equation roots
+ */
+DEFINE_EQUATION_RESULT(2);
+
+/**
+ * @brief Stack-allocate struct with dynamic root count
+ * @param num - number of roots
+ * @return Allocated struct
+ */
+#define local_generic_result(num)  \
+    ((EquationResultBase*) alloca( \
+        sizeof(EquationResultBase) + (num)*sizeof(double))))
+
+/**
+ * @brief Allocate struct with dynamic root count
+ * 
+ * @param root_count - number of roots
+ * @return Allocated struct
+ */
+EquationResultBase *generic_result(int root_count);
+
+/**
  * @brief Compares two double-precision floating-point numbers
  * 
  * @param a [in] - first number
@@ -32,9 +102,16 @@ enum root_count
  * @return negative number if a < b; positive number if a > b;
  * 0 if a and b are close enough to be considered equal
  * 
- * @note Minimal difference between numbers considered not equal is 1e-9
+ * @note Minimal difference between numbers considered not equal is 1e-8
  */
 int compare_double(double a, double b);
+
+/**
+ * @brief If x is sufficiently close to zero, replace x with 0
+ * 
+ * @param x - Value to be tested and replaced
+ */
+void clamp_to_zero(double* x);
 
 /**
  * @brief Solves equations ax^2 + bx + c = 0
@@ -42,28 +119,32 @@ int compare_double(double a, double b);
  * @param a [in] - first coefficient of an equaion
  * @param b [in] - second coefficient of an equation
  * @param c [in] - third coefficient of an equation
- * @param x1 [out] - pointer to the lesser of the roots
- * @param x2 [out] - pointer to the bigger of the roots
- * @return value, representing the number of roots
+ * @param result [out] - pointer to struct storing roots
+ * @return STATUS_SUCCESS if equation was solved sucessfully,
+ * STATUS_ERROR if equation could not be solved. See errno for
+ * more info.
  * 
- * @note If there is only one solution to the equation, x2 is not changed.
- * If there are no roots or an infinite amount of roots,
- * both x1 and x2 are not changed.
- * If there are two roots, *x1 < *x2
+ * @note If there is only one solution to the equation, result->roots[0]
+ * is not changed. If there are no roots or an infinite amount of roots,
+ * both result->roots[0] and result->roots[1] are not changed.
+ * If there are two roots, result->roots[0] < result->roots[1]
  */
-enum root_count solve_quadratic(double a, double b, double c,
-                                double *x1, double *x2);
+int solve_quadratic(double a, double b, double c,
+                    EQUATION_RESULT(2) *result);
 
 /**
  * @brief Solves equations ax + b = 0
  * 
  * @param a [in] - first coefficient of an equation
  * @param b [in] - second coefficient of an equation
- * @param x [out] - pointer to the root
- * @return value, representing the number of roots
+ * @param result [out] - pointer to struct storing roots
+ * @return STATUS_SUCCESS if equation was solved sucessfully,
+ * STATUS_ERROR if equation could not be solved. See errno for
+ * more info.
  * 
- * @note If there are no roots or an infinite amount of roots, x is not changed
+ * @note If there are no roots or an infinite amount of roots,
+ * result->roots is not changed
  */
-enum root_count solve_linear(double a, double b, double* x);
+int solve_linear(double a, double b, EQUATION_RESULT(1) *result);
 
 #endif

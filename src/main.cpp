@@ -12,38 +12,31 @@ enum status_code
     RETURN_RUNTIME_ERROR    = 2
 };
 
-void check_error(void);
-
 int main(int argc, char **argv)
 {
     double a = 0, b = 0, c = 0;
 
+    /* TODO: Extract user interaction to fuction */
     /* input coefficients */
     if (argc == 4) /* non-interactive mode */
     {
-        errno = 0;
-        if (parse_args(argc, argv, &a, &b, &c) != 0)
+        if (extract_doubles(argc, argv, &a, &b, &c) != 0)
         {
-            check_error();
             show_help();
             return RETURN_BAD_INPUT;
         }
     }
     else if (argc == 2)
     {
+        show_help();
         if (strcmp(argv[1], "-h") == 0)
-        {
-            show_help();
             return 0;
-        }
         return RETURN_BAD_INPUT;
     }
     else if (argc == 1) /* interactive mode */
     {
-        errno = 0;
         if (interactive_input(&a, &b, &c) == EOF)
             return 0;
-        check_error();
     }
     else /* incorrect usage */
     {
@@ -51,25 +44,14 @@ int main(int argc, char **argv)
         return RETURN_BAD_INPUT;
     }
 
-    double x1 = 0, x2 = 0;
+    EQUATION_RESULT(2) *result = 
+        (EQUATION_RESULT(2)*) calloc(1, sizeof(EQUATION_RESULT(2)));
 
-    errno = 0;
-    enum root_count n_roots = solve_quadratic(a, b, c, &x1, &x2);
-    if (errno == EINVAL) /* invalid coefficients */
-        return RETURN_RUNTIME_ERROR;
-    check_error();
+    solve_quadratic(a, b, c, result);
 
-    if (print_solutions(n_roots, x1, x2) != 0)
-        return RETURN_RUNTIME_ERROR;
+    print_roots(&result->base);
+
+    free(result);
 
     return RETURN_SUCCESS;
-}
-
-void check_error(void)
-{
-    if (errno)
-    {
-        perror("Runtime error");
-        exit(RETURN_RUNTIME_ERROR);
-    }
 }

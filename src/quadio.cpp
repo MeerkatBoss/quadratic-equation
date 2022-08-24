@@ -16,27 +16,28 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
-int flush_input(FILE *fd)
+
+enum line_skip_status skip_line(FILE *fd)
 {
     while (1)
     {
         switch(getc(fd))
         {
             case EOF:
-                return EOF;
+                return FILE_END;
             case '\n':
-                return 0;
+                return LINE_END;
             default:
                 break;
         }
     }
 }
 
-int parse_args(int argc, char** argv, ...)
+int extract_doubles(int argc, char** argv, ...)
 {
     va_list args = {};
 
-    va_start(args, argc - 1);
+    va_start(args, argv);
 
     for (int i = 1; i < argc; i++)
     {
@@ -46,23 +47,15 @@ int parse_args(int argc, char** argv, ...)
 
         /* check for valid vararg */
         assert(arg != NULL);
-        if (arg == NULL)
-        {
-            errno = EDESTADDRREQ;
-            return -2;
-        }
 
         /* check that argv is long enough */
         assert(argv[i] != NULL);
-        if (argv[i] == NULL)
-        {
-            errno = EINVAL;
-            return -2;
-        }
 
         if (sscanf(argv[i], " %lg", arg) != 1 || !isfinite(*arg))
-            return -2;
+            return -1;
     }
+    
+    va_end(args);
 
     return 0;
 }
@@ -71,11 +64,6 @@ int interactive_input(double *a, double *b, double *c)
 {
     /* check for valid pointers */
     assert(a != NULL && b != NULL && c != NULL);
-    if (a == NULL || b == NULL || c == NULL)
-    {
-        errno = EDESTADDRREQ;
-        return -2;
-    }
 
     /* prompt */
     printf("This program solves equations ax^2 + bx + c = 0\n");
@@ -87,33 +75,35 @@ int interactive_input(double *a, double *b, double *c)
             ! isfinite(*b) ||
             ! isfinite(*c))
     {
-        if (flush_input(stdin) == EOF) /* no further input */
+        if (skip_line(stdin) == FILE_END) /* no further input */
             return EOF;
         printf("Please enter 3 (three) numbers\n");
     }
     return 0;
 }
 
-int print_solutions(enum root_count n_roots, double x1, double x2)
+void print_roots(EquationResultBase* result)
 {
-    switch (n_roots) /* Determine output format */
+    switch (result->nroots) /* Determine output format */
     {
         case NO_ROOTS:
             printf("No real roots\n");
             break;
         case SINGLE_ROOT:
-            printf("Single root: %lg\n", x1);
+            printf("Single root: %lg\n",
+                result->roots[0]);
             break;
         case TWO_ROOTS:
-            printf("Two roots: %lg and %lg\n", x1, x2);
+            printf("Two roots: %lg and %lg\n",
+                result->roots[0],
+                result->roots[1]);
             break;
         case INF_ROOTS:
             printf("Infinitely many roots (x can be any real number)\n");
             break;
         default:
-            printf("Unknown error\n");
-            return -2;
+            assert(0 && "Unknown enum value.");
+            break;
     }
-    return 0;
 }
 

@@ -3,6 +3,8 @@
 #include <errno.h>
 #include "quadratic.h"
 
+static int solve_linear_unsafe(double a, double b, EQUATION_RESULT(1) *result);
+
 int compare_double(double a, double b)
 {
     /* minimal significant difference between numbers */
@@ -17,16 +19,24 @@ int compare_double(double a, double b)
     return 0;
 }
 
-enum root_count solve_quadratic(double a, double b, double c, double *x1, double *x2)
+void clamp_to_zero(double* x)
+{
+    if (compare_double(*x, 0) == 0)
+        *x = 0;
+}
+
+EquationResultBase *generic_result(int root_count)
+{
+    return (EquationResultBase*) calloc(1,
+        sizeof(EquationResultBase) + root_count*sizeof(double)
+    );
+}
+
+int solve_quadratic(double a, double b, double c,
+                                EQUATION_RESULT(2) *result)
 {
     /* check for valid pointers */
-    assert(x1 != NULL);
-    assert(x2 != NULL);
-    if (x1 == NULL || x2 == NULL)
-    {
-        errno = EDESTADDRREQ;
-        return NO_ROOTS;
-    }
+    assert(result != NULL);
 
     /* check for valid coefficients */
     assert(isfinite(a));
@@ -35,11 +45,14 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
     if (!isfinite(a) || !isfinite(b) || !isfinite(c))
     {
         errno = EINVAL;
-        return NO_ROOTS;
+        return SOLVE_ERROR;
     }
 
     if (compare_double(a, 0) == 0) /* a = 0 => linear equation */
-        return solve_linear(b, c, x1);
+        return solve_linear_unsafe(b, c,
+            (EQUATION_RESULT(1)*) result); /* EQUATION_RESULT(2)* can be safely cast
+                                            to EQUATION_RESULT(1)* due to alignment
+                                            rules */
 
     /* solve quadratic */
     double d = b * b - 4 * a * c;
@@ -49,48 +62,53 @@ enum root_count solve_quadratic(double a, double b, double c, double *x1, double
         return NO_ROOTS;
     if (d_sign == 0) /* single root */
     {
-        *x1 = -b / (2 * a);
-        return SINGLE_ROOT;
+        result->roots[0] = -b / (2 * a);
+        result->base.nroots = SINGLE_ROOT;
+        return SOLVE_SUCCESS;
     }
     /* two roots */
-    d = sqrt(d);
-    *x1 = (-b - d) / (2 * a);
-    *x2 = (-b + d) / (2 * a);
+    double d_sqrt = sqrt(d);
+    result->roots[0] = (-b - d_sqrt) / (2 * a);
+    result->roots[1] = (-b + d_sqrt) / (2 * a);
+    result->nroots = TWO_ROOTS;
 
     /* get rid of strange values '-0'*/
-    if (compare_double(*x1, 0) == 0)
-        *x1 = 0;
-    if (compare_double(*x2, 0) == 0)
-        *x2 = 0;
+    clamp_to_zero(&result->roots[0]);
+    clamp_to_zero(&result->roots[1]);
 
-
-    return TWO_ROOTS;
+    return SOLVE_SUCCESS;
 }
 
-enum root_count solve_linear(double a, double b, double *x)
+int solve_linear(double a, double b, EQUATION_RESULT(1) *result)
 {
     /* check for valid pointer */
-    assert(x != NULL);
-    if (x == NULL)
-    {
-        errno = EDESTADDRREQ;
-        return NO_ROOTS;
-    }
+    assert(result != NULL);
 
     /* check for valid coefficients */
     assert(isfinite(a) && isfinite(b));
     if (!isfinite(a) || !isfinite(b))
     {
         errno = EINVAL;
-        return NO_ROOTS;
+        return SOLVE_ERROR;
     }
 
-    if (compare_double(a, 0) == 0) /* no x in equation */
-        return compare_double(b, 0) == 0
-            ? INF_ROOTS
-            : NO_ROOTS;
+    return solve_linear_unsafe(a, b, result);
+}
 
-    *x = -b / a;
-    return SINGLE_ROOT;
+static int solve_linear_unsafe(double a, double b,
+                                            EQUATION_RESULT(1) *result)
+{
+    if (compare_double(a, 0) == 0) /* no x in equation */
+    {
+        result->nroots = (compare_double(b, 0) == 0
+            ? INF_ROOTS
+            : NO_ROOTS);
+        return SOLVE_SUCCESS;
+    }
+
+    result->roots[0] = -b / a;
+    clamp_to_zero(&result->roots[0]);
+    result->nroots = SINGLE_ROOT;
+    return SOLVE_SUCCESS;
 }
 

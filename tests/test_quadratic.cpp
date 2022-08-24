@@ -7,6 +7,8 @@
 
 #define BUFF_SIZE 1000
 
+/* TODO: Make generic wrappers for solvers, unify testing functions */
+
 void test_solve_linear(void)
 {
     printf("Started testing of solve_linear\n");
@@ -15,7 +17,7 @@ void test_solve_linear(void)
 
     assert(file != NULL);
 
-    char line[BUFF_SIZE] = "";
+    char line[BUFF_SIZE] = ""; 
     int test_count = 0;
     int failed = 0;
     while (next_test_case(file, BUFF_SIZE, line) == 0)
@@ -25,7 +27,7 @@ void test_solve_linear(void)
 
         if (sscanf(line, " %lg %lg %d %lg ", &a, &b, &n_roots, &x) != 4)
         {
-            printf("Corrupt test file %s. Error on line %d\n",
+            printf("Corrupt test file %s. Error in case #%d\n",
                 file_path,
                 get_case_number(file));
             continue;
@@ -70,7 +72,7 @@ void test_solve_quadratic(void)
         if (sscanf(line, " %lg %lg %lg %d %lg %lg ",
             &a, &b, &c, &n_roots, &x1, &x2) != 6)
         {
-            printf("Corrupt test file %s. Error on line %d\n",
+            printf("Corrupt test file %s. Error in case #%d\n",
                 file_path,
                 get_case_number(file));
             continue;

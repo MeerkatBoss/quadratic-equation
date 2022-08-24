@@ -20,6 +20,12 @@
  */
 void show_help(void);
 
+enum line_skip_status
+{
+    LINE_END = 0,
+    FILE_END = -1
+};
+
 /**
  * @brief Reads and discards all symbols until '\\n'
  * from stream
@@ -27,7 +33,7 @@ void show_help(void);
  * @param fd [in] - file descriptor of a stream
  * @return 0 upon success; EOF upon encountering end-of-file
  */
-int flush_input(FILE *fd);
+enum line_skip_status skip_line(FILE *fd);
 
 /**
  * @brief Reads double-precision floating-point numbers
@@ -38,7 +44,7 @@ int flush_input(FILE *fd);
  * @param ... [out] - pointers for storing numbers
  * @return 0 upon success; -2 upon failure
  */
-int parse_args(int n, char** str, ...);
+int extract_doubles(int n, char** str, ...);
 
 /**
  * @brief Reads three double-precision floating-point numbers
@@ -60,6 +66,6 @@ int interactive_input(double* a, double* b, double* c);
  * @param x2 [in] - second root
  * @return 0 upon success, -2 upon failure
  */
-int print_solutions(enum root_count n_roots, double x1, double x2);
+void print_roots(EquationResultBase* result);
 
 #endif

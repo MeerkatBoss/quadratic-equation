@@ -3,6 +3,8 @@
 
 #define TEST_SOURCE(func) "./test_cases/" #func "_test.txt"
 
+/* TODO: Generalize TestFile, use buffer for file contents */
+
 struct TestFile;
 typedef struct TestFile TestFile;
 
