@@ -10,7 +10,7 @@ Coefficients can be provided via command-line arguments:
 quad <a> <b> <c>
 ```
 
-Upon receiving invalid values (letters, $\plusmn inf$, NaN) or incorrect number
+Upon receiving invalid values (letters, Inf, -Inf, NaN) or incorrect number
 of values the program will terminate with exit code 1.
 
 ## Interactive mode
