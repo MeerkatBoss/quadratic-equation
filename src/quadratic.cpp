@@ -19,7 +19,7 @@ int compare_double(double a, double b)
 
 enum root_count solve_quadratic(double a, double b, double c, double *x1, double *x2)
 {
-    /* chech for valid pointers */
+    /* check for valid pointers */
     assert(x1 != NULL);
     assert(x2 != NULL);
     if (x1 == NULL || x2 == NULL)

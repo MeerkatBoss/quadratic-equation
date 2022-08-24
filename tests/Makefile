@@ -22,19 +22,26 @@ COPTIONS=-fcheck-new\
 -pie -Wlarger-than=8192 -Wstack-usage=8192
 
 
-all: bin/quad
+all: bin/tests
 
-bin/quad: obj/main.o obj/quadratic.o obj/quadio.o
-	$(CC) $(COPTIONS) obj/* -o bin/quad
+bin/tests: obj/main.o obj/test_quadratic.o obj/testing.o\
+			obj/quadratic.o obj/quadio.o 
+	$(CC) $(COPTIONS) obj/* -o bin/tests
 
 obj/main.o: main.cpp
 	$(CC) $(CFLAGS) -c main.cpp -o obj/main.o
 
-obj/quadratic.o: quadratic.cpp
-	$(CC) $(CFLAGS) -c quadratic.cpp -o obj/quadratic.o
+obj/test_quadratic.o: test_quadratic.cpp
+	$(CC) $(CFLAGS) -c test_quadratic.cpp -o obj/test_quadratic.o
 
-obj/quadio.o: quadio.cpp
-	$(CC) $(CFLAGS) -c quadio.cpp -o obj/quadio.o
+obj/testing.o: testing.cpp
+	$(CC) $(CFLAGS) -c testing.cpp -o obj/testing.o
+
+obj/quadio.o: ../src/quadio.cpp
+	$(CC) $(CFLAGS) -c ../src/quadio.cpp -o obj/quadio.o
+
+obj/quadratic.o: ../src/quadratic.cpp
+	$(CC) $(CFLAGS) -c ../src/quadratic.cpp -o obj/quadratic.o
 
 clean:
 	rm bin/* obj/*
