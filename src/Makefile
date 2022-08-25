@@ -27,22 +27,27 @@ ifeq ($(DEBUG), 0)
 	CFLAGS+="-D NDEBUG"
 endif
 
-all: bin/quad
+BUILDDIR=../build/src
 
-bin/quad: obj/main.o obj/quadratic.o obj/quadio.o obj/double_utils.o
-	$(CC) $(COPTIONS) obj/* -o bin/quad
+all: quad
 
-obj/main.o: main.cpp
-	$(CC) $(CFLAGS) -c main.cpp -o obj/main.o
+quad: $(BUILDDIR)/obj/main.o\
+	  $(BUILDDIR)/obj/quadratic.o\
+	  $(BUILDDIR)/obj/quadio.o\
+	  $(BUILDDIR)/obj/double_utils.o
+	$(CC) $(COPTIONS) $(BUILDDIR)/obj/* -o $(BUILDDIR)/bin/quad
 
-obj/quadratic.o: quadratic.cpp
-	$(CC) $(CFLAGS) -c quadratic.cpp -o obj/quadratic.o
+$(BUILDDIR)/obj/main.o: main.cpp
+	$(CC) $(CFLAGS) -c main.cpp -o $(BUILDDIR)/obj/main.o
 
-obj/quadio.o: quadio.cpp
-	$(CC) $(CFLAGS) -c quadio.cpp -o obj/quadio.o
+$(BUILDDIR)/obj/quadratic.o: quadratic.cpp
+	$(CC) $(CFLAGS) -c quadratic.cpp -o $(BUILDDIR)/obj/quadratic.o
 
-obj/double_utils.o: double_utils.cpp
-	$(CC) $(CFLAGS) -c double_utils.cpp -o obj/double_utils.o
+$(BUILDDIR)/obj/quadio.o: quadio.cpp
+	$(CC) $(CFLAGS) -c quadio.cpp -o $(BUILDDIR)/obj/quadio.o
+
+$(BUILDDIR)/obj/double_utils.o: double_utils.cpp
+	$(CC) $(CFLAGS) -c double_utils.cpp -o $(BUILDDIR)/obj/double_utils.o
 
 clean:
-	rm bin/* obj/*
+	rm $(BUILDDIR)/bin/* $(BUILDDIR)/obj/*

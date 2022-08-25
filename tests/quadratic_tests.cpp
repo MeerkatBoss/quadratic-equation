@@ -9,7 +9,7 @@ TEST(solve_linear)
 {
     FileReader *fr = open_file(TEST_SOURCE(solve_linear));
     char line[BUFLEN] = "";
-    while (next_line(fr, BUFLEN, line) != EOF)
+    while (next_line(fr, BUFLEN, line) == 0)
         TEST_CASE
         {
             double a = 0, b = 0, x_expected = 0;
@@ -19,7 +19,7 @@ TEST(solve_linear)
             if (read != 5)
             {
                 ASSERT_TRUE(0 && "Corrupted test file.");
-                TEST_CASE_ABORT;
+                abort();
             }
             
             EQUATION_RESULT(1) result = {.nroots = NO_ROOTS, .roots = {0}};
@@ -36,7 +36,7 @@ TEST(solve_quadratic)
 {
     FileReader *fr = open_file(TEST_SOURCE(solve_quadratic));
     char line[BUFLEN];
-    while(next_line(fr, BUFLEN, line) != EOF)
+    while(next_line(fr, BUFLEN, line) == 0)
         TEST_CASE
         {
             double a = 0, b = 0, c = 0,
@@ -48,7 +48,7 @@ TEST(solve_quadratic)
             if (read != 7)
             {
                 ASSERT_TRUE(0 && "Corrupted test file");
-                TEST_CASE_ABORT;
+                abort();
             }
 
             EQUATION_RESULT(2) result = {.nroots = NO_ROOTS, .roots = {0, 0}};

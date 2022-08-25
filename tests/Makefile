@@ -27,32 +27,45 @@ ifeq ($(DEBUG), 0)
 	CFLAGS+="-D NDEBUG"
 endif
 
-all: bin/tests
+SRC=$(realpath ../src)
+BUILDDIR=$(realpath ../build/tests)
 
-bin/tests: obj/main.o obj/quadratic_tests.o obj/file_reader.o obj/testing.o\
-			obj/quadratic.o obj/quadio.o obj/double_utils.o
-	$(CC) $(COPTIONS) obj/* -o bin/tests
+run_tests: tests
+	cd test_cases && $(BUILDDIR)/bin/tests
 
-obj/main.o: main.cpp
-	$(CC) $(CFLAGS) -c main.cpp -o obj/main.o
+all: tests
 
-obj/quadratic_tests.o: quadratic_tests.cpp
-	$(CC) $(CFLAGS) -c quadratic_tests.cpp -o obj/quadratic_tests.o
+tests: $(BUILDDIR)/obj/main.o\
+	   $(BUILDDIR)/obj/quadratic_tests.o\
+	   $(BUILDDIR)/obj/file_reader.o\
+	   $(BUILDDIR)/obj/testing.o\
+	   $(BUILDDIR)/obj/quadratic.o\
+	   $(BUILDDIR)/obj/quadio.o\
+	   $(BUILDDIR)/obj/double_utils.o
+	$(CC) $(COPTIONS) $(BUILDDIR)/obj/* -o $(BUILDDIR)/bin/tests
+	cp -r test_cases/ $(BUILDDIR)/
 
-obj/testing.o: testing.cpp
-	$(CC) $(CFLAGS) -c testing.cpp -o obj/testing.o
+$(BUILDDIR)/obj/main.o: main.cpp
+	$(CC) $(CFLAGS) -c main.cpp -o $(BUILDDIR)/obj/main.o
 
-obj/file_reader.o: file_reader.cpp
-	$(CC) $(CFLAGS) -c file_reader.cpp -o obj/file_reader.o
+$(BUILDDIR)/obj/quadratic_tests.o: quadratic_tests.cpp
+	$(CC) $(CFLAGS) -c quadratic_tests.cpp -o $(BUILDDIR)/obj/quadratic_tests.o
 
-obj/quadio.o: ../src/quadio.cpp
-	$(CC) $(CFLAGS) -c ../src/quadio.cpp -o obj/quadio.o
+$(BUILDDIR)/obj/testing.o: testing.cpp
+	$(CC) $(CFLAGS) -c testing.cpp -o $(BUILDDIR)/obj/testing.o
 
-obj/quadratic.o: ../src/quadratic.cpp
-	$(CC) $(CFLAGS) -c ../src/quadratic.cpp -o obj/quadratic.o
+$(BUILDDIR)/obj/file_reader.o: file_reader.cpp
+	$(CC) $(CFLAGS) -c file_reader.cpp -o $(BUILDDIR)/obj/file_reader.o
 
-obj/double_utils.o: ../src/double_utils.cpp
-	$(CC) $(CFLAGS) -c ../src/double_utils.cpp -o obj/double_utils.o
+$(BUILDDIR)/obj/quadio.o: $(SRC)/quadio.cpp
+	$(CC) $(CFLAGS) -c $(SRC)/quadio.cpp -o $(BUILDDIR)/obj/quadio.o
+
+$(BUILDDIR)/obj/quadratic.o: $(SRC)/quadratic.cpp
+	$(CC) $(CFLAGS) -c $(SRC)/quadratic.cpp -o $(BUILDDIR)/obj/quadratic.o
+
+$(BUILDDIR)/obj/double_utils.o: ../src/double_utils.cpp
+	$(CC) $(CFLAGS) -c $(SRC)/double_utils.cpp -o $(BUILDDIR)/obj/double_utils.o
 
 clean:
-	rm bin/* obj/*
+	rm $(BUILDDIR)/bin/* $(BUILDDIR)/obj/*
+	rm -r $(BUILDDIR)/test_cases

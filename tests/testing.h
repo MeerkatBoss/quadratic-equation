@@ -11,11 +11,7 @@ void __testing_init_test_case(void);
 void __testing_collect_test_case(void);
 int __testing_check_test_case_running(void);
 
-#define TEST_SOURCE(func) "./test_cases/" #func "_test.txt"
-
-#define __COLLECT_TEST(func) do                                     \
-{                                                                   \
-} while(0)
+#define TEST_SOURCE(func) #func "_test.txt"
 
 #define __TEST_NAME(func) __test_##func
 
