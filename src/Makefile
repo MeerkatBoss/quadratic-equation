@@ -29,7 +29,7 @@ endif
 
 all: bin/quad
 
-bin/quad: obj/main.o obj/quadratic.o obj/quadio.o
+bin/quad: obj/main.o obj/quadratic.o obj/quadio.o obj/double_utils.o
 	$(CC) $(COPTIONS) obj/* -o bin/quad
 
 obj/main.o: main.cpp
@@ -40,6 +40,9 @@ obj/quadratic.o: quadratic.cpp
 
 obj/quadio.o: quadio.cpp
 	$(CC) $(CFLAGS) -c quadio.cpp -o obj/quadio.o
+
+obj/double_utils.o: double_utils.cpp
+	$(CC) $(CFLAGS) -c double_utils.cpp -o obj/double_utils.o
 
 clean:
 	rm bin/* obj/*

@@ -95,25 +95,6 @@ DEFINE_EQUATION_RESULT(2);
 EquationResultBase *generic_result(int root_count);
 
 /**
- * @brief Compares two double-precision floating-point numbers
- * 
- * @param[in] a - first number
- * @param[in] b - second number
- * @return negative number if a < b; positive number if a > b;
- * 0 if a and b are close enough to be considered equal
- * 
- * @note Minimal difference between numbers considered not equal is 1e-8
- */
-int compare_double(double a, double b);
-
-/**
- * @brief If x is sufficiently close to zero, replace x with 0
- * 
- * @param[inout] x - Value to be tested and replaced
- */
-void clamp_to_zero(double* x);
-
-/**
  * @brief Solves equations ax^2 + bx + c = 0
  * 
  * @param[in] a - first coefficient of an equaion
