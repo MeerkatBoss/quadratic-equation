@@ -1,104 +1,70 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <errno.h>
-#include "../src/quadio.h"
 #include "testing.h"
 
-struct TestFile
+enum test_state
 {
-    FILE *fd;
-    int line;
+    TEST_NONE    = 0,
+    TEST_SUCCESS = 1,
+    TEST_FAILURE = -1
 };
 
-TestFile *test_file(const char *path)
+static struct
 {
-    assert(path != NULL);
-    if (path == NULL)
+    int tests_total;
+    int tests_failed;
+    enum test_state state;
+} __current_testing_state 
+    {.tests_total = 0, .tests_failed = 0, .state = TEST_NONE};
+
+void __testing_assert_true(int condition, const char* condition_str)
+{
+    if (!(condition))
     {
-        errno = EINVAL;
-        return NULL;
+        printf(TEXT_NOTE("ASSERTION FAILED: ") "\'%s\' in test case %d\n",
+            condition_str, __current_testing_state.tests_total);
+        __current_testing_state.state = TEST_FAILURE;
     }
-
-    TestFile *tf = (TestFile *) calloc(1, sizeof(TestFile));
-
-    if (tf == NULL) /* failed to allocate, errno set by malloc */
-        return NULL;
-
-    *tf = { .fd = fopen(path, "r"), .line = 0 };
-
-    if (tf->fd == NULL) /* failed to open file, errno set by fopen */
-    {
-        free(tf);
-        return NULL;
-    }
-
-    return tf;
 }
 
-int get_case_number(TestFile *tf)
+void __testing_init_test(const char* name)
 {
-    assert(tf != NULL);
-    if (tf == NULL)
-    {
-        errno = EINVAL;
-        return -1;
-    }
-
-    return tf->line;
+    printf(TEXT_INFO("== RUNNING TESTS FOR \'%s\' ==")"\n", name);
+    __current_testing_state = {
+        .tests_total = 0, .tests_failed = 0, .state = TEST_NONE};
 }
 
-int next_test_case(TestFile *tf, int bufsize, char *buffer)
+void __testing_collect_test(const char* name)
 {
-    assert(tf != NULL);
-    if (tf == NULL)
-    {
-        errno = EINVAL;
-        return -2;
-    }
-
-    assert(buffer != NULL);
-    if (buffer == NULL)
-    {
-        errno = EDESTADDRREQ;
-        return -2;
-    }
-
-    if (feof(tf->fd)) /* already finished reading file */
-        return EOF;
-
-    fgets(buffer, bufsize, tf->fd);
-
-    if (ferror(tf->fd)) /* problem when reading file */
-    {
-        errno = EIO;
-        return -2;
-    }
-
-    tf->line++;
-
-    if (feof(tf->fd)) /* last line read */
-        return EOF;
-    if (strchr(buffer, '\n') == NULL) /* did not read to the end */
-    {
-        skip_line(tf->fd);
-        errno = EOVERFLOW;
-        return -2;
-    }
-    return 0;
+    if (__current_testing_state.tests_failed)
+        printf(TEXT_ERROR("## TESTS FOR \'%s\' FAILED ##")"\n"
+                "\t" TEXT_NOTE("Tests total: ") "%d\n"
+                "\t" TEXT_BAD("Tests failed: ") "%d\n"
+                "\n",
+                name,
+                __current_testing_state.tests_total,
+                __current_testing_state.tests_failed);
+    else
+        printf(TEXT_SUCCESS(">> All tests for \'%s\' passed <<")"\n"
+                "\t" TEXT_NOTE("Tests total: ") "%d\n"
+                "\n",
+                name, __current_testing_state.tests_total);
 }
 
-void close_test_file(TestFile *tf)
+void __testing_init_test_case(void)
 {
-    assert(tf != NULL);
-    if (tf == NULL)
-    {
-        errno = EINVAL;
-        return;
-    }
-
-    fclose(tf->fd);
-    free(tf);
+    __current_testing_state.tests_total++;
+    __current_testing_state.state = TEST_NONE;
 }
 
+void __testing_collect_test_case(void)
+{
+    if (__current_testing_state.state == TEST_FAILURE)
+        __current_testing_state.tests_failed++;
+    else
+        __current_testing_state.state = TEST_SUCCESS;
+}
+
+int __testing_check_test_case_running(void)
+{
+    return __current_testing_state.state == TEST_NONE;
+}

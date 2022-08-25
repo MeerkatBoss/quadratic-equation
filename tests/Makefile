@@ -21,27 +21,38 @@ COPTIONS=-fcheck-new\
 }unreachable,vla-bound,vptr\
 -pie -Wlarger-than=8192 -Wstack-usage=8192
 
+DEBUG?=0
+
+ifeq ($(DEBUG), 0)
+	CFLAGS+="-D NDEBUG"
+endif
 
 all: bin/tests
 
-bin/tests: obj/main.o obj/test_quadratic.o obj/testing.o\
-			obj/quadratic.o obj/quadio.o 
+bin/tests: obj/main.o obj/quadratic_tests.o obj/file_reader.o obj/testing.o\
+			obj/quadratic.o obj/quadio.o obj/double_utils.o
 	$(CC) $(COPTIONS) obj/* -o bin/tests
 
 obj/main.o: main.cpp
 	$(CC) $(CFLAGS) -c main.cpp -o obj/main.o
 
-obj/test_quadratic.o: test_quadratic.cpp
-	$(CC) $(CFLAGS) -c test_quadratic.cpp -o obj/test_quadratic.o
+obj/quadratic_tests.o: quadratic_tests.cpp
+	$(CC) $(CFLAGS) -c quadratic_tests.cpp -o obj/quadratic_tests.o
 
 obj/testing.o: testing.cpp
 	$(CC) $(CFLAGS) -c testing.cpp -o obj/testing.o
+
+obj/file_reader.o: file_reader.cpp
+	$(CC) $(CFLAGS) -c file_reader.cpp -o obj/file_reader.o
 
 obj/quadio.o: ../src/quadio.cpp
 	$(CC) $(CFLAGS) -c ../src/quadio.cpp -o obj/quadio.o
 
 obj/quadratic.o: ../src/quadratic.cpp
 	$(CC) $(CFLAGS) -c ../src/quadratic.cpp -o obj/quadratic.o
+
+obj/double_utils.o: ../src/double_utils.cpp
+	$(CC) $(CFLAGS) -c ../src/double_utils.cpp -o obj/double_utils.o
 
 clean:
 	rm bin/* obj/*

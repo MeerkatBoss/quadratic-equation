@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "test_quadratic.h"
+#include "quadratic_tests.h"
 
 int main()
 {
-    test_solve_linear();
-    test_solve_quadratic();
+    RUN_TEST(solve_linear);
+    RUN_TEST(solve_quadratic);
     return 0;
 }
