@@ -20,7 +20,7 @@ void __testing_assert_true(int condition, const char* condition_str)
 {
     if (!(condition))
     {
-        printf(TEXT_NOTE("ASSERTION FAILED: ") "\'%s\' in test case %d\n",
+        printf(TEXT_NOTE("ASSERTION FAILED: ") "\'%s\' in test #%d\n",
             condition_str, __current_testing_state.tests_total);
         __current_testing_state.state = TEST_FAILURE;
     }
