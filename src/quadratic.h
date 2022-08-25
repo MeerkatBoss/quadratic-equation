@@ -89,7 +89,7 @@ DEFINE_EQUATION_RESULT(2);
 /**
  * @brief Allocate struct with dynamic root count
  * 
- * @param root_count - number of roots
+ * @param[in] root_count - number of roots
  * @return Allocated struct
  */
 EquationResultBase *generic_result(int root_count);
@@ -97,8 +97,8 @@ EquationResultBase *generic_result(int root_count);
 /**
  * @brief Compares two double-precision floating-point numbers
  * 
- * @param a [in] - first number
- * @param b [in] - second number
+ * @param[in] a - first number
+ * @param[in] b - second number
  * @return negative number if a < b; positive number if a > b;
  * 0 if a and b are close enough to be considered equal
  * 
@@ -109,17 +109,17 @@ int compare_double(double a, double b);
 /**
  * @brief If x is sufficiently close to zero, replace x with 0
  * 
- * @param x - Value to be tested and replaced
+ * @param[inout] x - Value to be tested and replaced
  */
 void clamp_to_zero(double* x);
 
 /**
  * @brief Solves equations ax^2 + bx + c = 0
  * 
- * @param a [in] - first coefficient of an equaion
- * @param b [in] - second coefficient of an equation
- * @param c [in] - third coefficient of an equation
- * @param result [out] - pointer to struct storing roots
+ * @param[in] a - first coefficient of an equaion
+ * @param[in] b - second coefficient of an equation
+ * @param[in] c - third coefficient of an equation
+ * @param[out] result - pointer to struct storing roots
  * @return STATUS_SUCCESS if equation was solved sucessfully,
  * STATUS_ERROR if equation could not be solved. See errno for
  * more info.
@@ -135,9 +135,9 @@ int solve_quadratic(double a, double b, double c,
 /**
  * @brief Solves equations ax + b = 0
  * 
- * @param a [in] - first coefficient of an equation
- * @param b [in] - second coefficient of an equation
- * @param result [out] - pointer to struct storing roots
+ * @param[in] a - first coefficient of an equation
+ * @param[in] b - second coefficient of an equation
+ * @param[in] result - pointer to struct storing roots
  * @return STATUS_SUCCESS if equation was solved sucessfully,
  * STATUS_ERROR if equation could not be solved. See errno for
  * more info.

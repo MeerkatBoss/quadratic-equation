@@ -36,9 +36,3 @@ Usage:
     quad <a> <b> <c> - to get roots of an equation ax^2 + bx + c = 0
     quad -h - to get this message
 ```
-
-## Runtime errors
-Upon encountering unexpected error during execution, program will print string
-representation of encountered error and terminate with exit code 2. If you
-encounter such error, please report it as an issue on GitHub and provide exact
-steps to reproduce it.
