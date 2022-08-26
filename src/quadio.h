@@ -20,16 +20,36 @@
  */
 void show_help(void);
 
+enum read_coeff_status
+{
+    ALL_READ        = 0,
+    USER_QUIT       = 1,
+    USER_BAD_INPUT  = -1,
+    HELP_DISPLAYED  = 3
+};
+/**
+ * @brief Processes command-line argments and user input to get coefficients
+ * 
+ * @param[in] argc - length of argv
+ * @param[in] argv - command-line argument vector
+ * @param[out] a - pointer to first coefficient
+ * @param[out] b - pointer to second coefficient
+ * @param[out] c - pointer to third coefficient
+ * @return Status of reading coefficients
+ */
+enum read_coeff_status try_get_coefficients(int argc, char** argv,
+                                        double *a, double *b, double *c);
+
 /**
  * @brief Reads double-precision floating-point numbers
- * from string
+ * from argv
  * 
- * @param[in] n - amount of numbers to read
- * @param[in] str - string, containing numbers
+ * @param[in] argc - length of argv
+ * @param[in] argv - command-line argument vector
  * @param[out] ... - pointers for storing numbers
  * @return 0 upon success; -2 upon failure
  */
-int extract_doubles(int n, char** str, ...);
+int extract_doubles(int argc, char** argv, ...);
 
 /**
  * @brief Reads three double-precision floating-point numbers

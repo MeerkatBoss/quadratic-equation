@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <math.h>
+#include <string.h>
 #include "quadio.h"
 #include "io_utils.h"
 
@@ -17,6 +18,28 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
+enum read_coeff_status try_get_coefficients(int argc, char** argv,
+                                        double *a, double *b, double *c)
+{
+    switch(argc)
+    {
+        case 4:
+            if (extract_doubles(argc, argv, a, b, c) != 0)
+                    return USER_BAD_INPUT;
+            break;
+        case 1:
+            if (interactive_input(a, b, c) == EOF)
+                return USER_QUIT;
+            break;
+        default:
+            if (argc == 2 && (
+                strncmp("-h", argv[1], 2) ||
+                strncmp("--help", argv[1], 6)))
+                    return HELP_DISPLAYED;
+            return USER_BAD_INPUT;
+    }
+    return ALL_READ;
+}
 
 int extract_doubles(int argc, char** argv, ...)
 {

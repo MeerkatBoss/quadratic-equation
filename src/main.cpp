@@ -1,7 +1,5 @@
-#include <errno.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <assert.h>
 #include "quadratic.h"
 #include "quadio.h"
 
@@ -16,42 +14,31 @@ int main(int argc, char **argv)
 {
     double a = 0, b = 0, c = 0;
 
-    /* TODO: Extract user interaction to fuction */
-    /* input coefficients */
-    if (argc == 4) /* non-interactive mode */
+    /* Read coefficients or display help message */
+    switch (try_get_coefficients(argc, argv, &a, &b, &c))
     {
-        if (extract_doubles(argc, argv, &a, &b, &c) != 0)
-        {
+        case HELP_DISPLAYED:
+            show_help();
+            return RETURN_SUCCESS;
+        case USER_QUIT:
+            return RETURN_SUCCESS;
+        case USER_BAD_INPUT:
+            printf("Incorrect program usage.\n");
             show_help();
             return RETURN_BAD_INPUT;
-        }
-    }
-    else if (argc == 2)
-    {
-        show_help();
-        if (strcmp(argv[1], "-h") == 0)
-            return 0;
-        return RETURN_BAD_INPUT;
-    }
-    else if (argc == 1) /* interactive mode */
-    {
-        if (interactive_input(&a, &b, &c) == EOF)
-            return 0;
-    }
-    else /* incorrect usage */
-    {
-        show_help();
-        return RETURN_BAD_INPUT;
+        case ALL_READ:
+            break;
+        default:
+            assert(0 && "Unknown enum value");
+            return RETURN_RUNTIME_ERROR;
     }
 
-    EQUATION_RESULT(2) *result = 
-        (EQUATION_RESULT(2)*) calloc(1, sizeof(EQUATION_RESULT(2)));
+    /* Solve equation */
+    EQUATION_RESULT(2) result = {.nroots = NO_ROOTS, .roots = {0, 0}};
+    solve_quadratic(a, b, c, &result);
 
-    solve_quadratic(a, b, c, result);
-
-    print_roots(&result->base);
-
-    free(result);
+    /* Output result */
+    print_roots(&result.base);
 
     return RETURN_SUCCESS;
 }
