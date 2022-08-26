@@ -38,7 +38,7 @@ enum read_coeff_status
  * @return Status of reading coefficients
  */
 enum read_coeff_status try_get_coefficients(int argc, char** argv,
-                                        double *a, double *b, double *c);
+                                            double *a, double *b, double *c);
 
 /**
  * @brief Reads double-precision floating-point numbers

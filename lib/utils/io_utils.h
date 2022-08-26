@@ -34,45 +34,29 @@ enum line_skip_status skip_line(FILE *fd);
 /**
  * @brief Wraps FILE*, provides access to line-by-line
  * reading of a file. Counts lines automatically,
- * starting at 1
+ * starting at 0
  */
-struct FileReader;
-typedef struct FileReader FileReader;
+typedef struct
+{
+    const char *text;
+    size_t text_len;
+    const char * const * lines;
+    size_t line_count;
+} LineFileReader;
 
 /**
- * @brief Allocates FileReader, opens specified file
+ * @brief Allocates LineFileReader, opens specified file
  * 
  * @param[in] path - path to opened file
- * @return Allocated FileReader with opened file 
+ * @return Allocated LineFileReader with opened file 
  */
-FileReader *open_file(const char* path);
+const LineFileReader *read_file(const char* path);
 
 /**
- * @brief Gets number of last read line. Lines are numerated
- * starting at 1
+ * @brief Frees allocated LineFileReader and closes associated file
  * 
- * @param[in] freader - FileReader instance
- * @return Number of line
+ * @param[in] lfreader - LineFileReader instance
  */
-int get_line_number(FileReader* freader);
-
-/**
- * @brief Reads no more than buflen-1 characters from next
- * line into buffer
- * 
- * @param[in] freader - FileReader instance
- * @param[in] buflen - buffer size
- * @param[out] buffer - output buffer
- * @return 0 upon success, EOF upon encountering end of file,
- * -2 upon failure
- */
-int next_line(FileReader* freader, int buflen, char* buffer);
-
-/**
- * @brief Frees allocated FileReader and closes associated file
- * 
- * @param[in] freader - FileReader instance
- */
-void close_file(FileReader* freader);
+void close_reader(const LineFileReader* lfreader);
 
 #endif

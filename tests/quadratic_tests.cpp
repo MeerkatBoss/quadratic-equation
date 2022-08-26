@@ -3,13 +3,13 @@
 #include "quadratic.h"
 #include "io_utils.h"
 
-#define BUFLEN 1000
-
+// TODO: use solver dispatcher to prevent HUGE code duplication (yeah, it's smaller but still huge)
 TEST(solve_linear)
 {
-    FileReader *fr = open_file(TEST_SOURCE(solve_linear));
-    char line[BUFLEN] = "";
-    while (next_line(fr, BUFLEN, line) == 0)
+    const LineFileReader *fr = read_file(TEST_SOURCE(solve_linear));
+    for (int i = 0; i < fr->line_count; i++)
+    {
+        const char* line = fr->lines[i];
         TEST_CASE
         {
             double a = 0, b = 0, x_expected = 0;
@@ -29,14 +29,17 @@ TEST(solve_linear)
             ASSERT_EQUAL(roots_expected, (int)result.nroots, "%d");
             ASSERT_DOUBLE_EQUAL(x_expected, result.roots[0], "%lg");
         }
-    close_file(fr);
+    }
+    close_reader(fr);
 }
 
 TEST(solve_quadratic)
 {
-    FileReader *fr = open_file(TEST_SOURCE(solve_quadratic));
-    char line[BUFLEN];
-    while(next_line(fr, BUFLEN, line) == 0)
+    const LineFileReader *fr = read_file(TEST_SOURCE(solve_quadratic));
+
+    for (int i = 0; i < fr->line_count; i++)
+    {
+        const char *line = fr->lines[i];
         TEST_CASE
         {
             double a = 0, b = 0, c = 0,
@@ -59,5 +62,6 @@ TEST(solve_quadratic)
             ASSERT_DOUBLE_EQUAL(x1_expected, result.roots[0], "%lg");
             ASSERT_DOUBLE_EQUAL(x2_expected, result.roots[1], "%lg");
         }
-    close_file(fr);
+    }
+    close_reader(fr);
 }

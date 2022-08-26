@@ -18,24 +18,33 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
+#define array_size(array) sizeof(array) / sizeof(*array)
+
 enum read_coeff_status try_get_coefficients(int argc, char** argv,
                                         double *a, double *b, double *c)
 {
+    static const char short_help[] = "-h";
+    static const char long_help[] = "--help";
+
+    argc--;
+    argv++;
+
     switch(argc)
     {
-        case 4:
+        case 3:
             if (extract_doubles(argc, argv, a, b, c) != 0)
                     return USER_BAD_INPUT;
             break;
-        case 1:
+        case 0:
             if (interactive_input(a, b, c) == EOF)
                 return USER_QUIT;
             break;
-        default:
-            if (argc == 2 && (
-                strncmp("-h", argv[1], 2) ||
-                strncmp("--help", argv[1], 6)))
+        case 1:
+            if (strncmp(short_help, argv[0], array_size(short_help)) ||
+                strncmp( long_help, argv[0], array_size( long_help)))
                     return HELP_DISPLAYED;
+            [[fallthrough]];
+        default:
             return USER_BAD_INPUT;
     }
     return ALL_READ;

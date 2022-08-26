@@ -2,7 +2,10 @@
 #include <assert.h>
 #include <errno.h>
 #include <stdlib.h>
-#include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 enum line_skip_status skip_line(FILE *fd)
 {
@@ -20,98 +23,98 @@ enum line_skip_status skip_line(FILE *fd)
     }
 }
 
-struct FileReader
-{
-    FILE *fd;
-    int line;
-};
-
-FileReader *open_file(const char *path)
+/**
+ * @brief Maps file lines to memory
+ * 
+ * @param[in] path - path to file
+ * @param[out] file_size - pointer to file size
+ * @return file contents
+ */
+static char* map_file(const char *path, size_t *file_size)
 {
     assert(path != NULL);
-    if (path == NULL)
-    {
-        errno = EINVAL;
+
+    /* Open file descriptor */
+    int fd = open(path, O_RDONLY);
+    if (fd < 0) {/* Cannot open file, errno set by open */
+        perror("Cannot open file.");
         return NULL;
     }
 
-    FileReader *tf = (FileReader *) calloc(1, sizeof(FileReader));
-
-    if (tf == NULL) /* failed to allocate, errno set by malloc */
-        return NULL;
-
-    *tf = { .fd = fopen(path, "r"), .line = 0 };
-
-    if (tf->fd == NULL) /* failed to open file, errno set by fopen */
+    /* Get file size */
+    struct stat file_stat;
+    if (fstat(fd, &file_stat) < 0) /* Cannot read file, errno set by fstat */
     {
-        free(tf);
+        int tmp = errno;
+        close(fd);
+        errno = tmp;
         return NULL;
     }
 
-    return tf;
+    /* Call mmap */
+    char *mapping = (char*) mmap( /* Map extra byte for '\0' */
+        NULL, (size_t)file_stat.st_size + 1u,
+        PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    close(fd);
+    if (mapping == MAP_FAILED) /* Mapping failed, errno set by mmap */
+    {
+        perror("Failed to read file.");
+        return NULL;
+    }
+
+    *file_size = (size_t)file_stat.st_size + 1u;
+    return mapping;
 }
 
-int get_line_number(FileReader *tf)
+const LineFileReader *read_file(const char *path)
 {
-    assert(tf != NULL);
-    if (tf == NULL)
-    {
-        errno = EINVAL;
-        return -1;
-    }
+    char *text = NULL;
+    size_t text_len = 0;
 
-    return tf->line;
+    text = map_file(path, &text_len);
+
+    if (text == NULL)
+        return NULL;
+
+    size_t line_count = 1;
+    for (int i = 0; i < text_len - 1; i++) /* NUL-terminate each line */
+        if (text[i] == '\n')
+        {
+            text[i] = '\0';
+            line_count++;
+        }
+    text[text_len - 1] = '\0';
+
+    char ** lines = (char**) calloc(line_count, sizeof(char*));
+    char *last_line = text; /* Pointer to the beginning of last line */
+    int line_num = 0;
+    for (int i = 0; i < text_len; i++)
+        if (text[i] == '\0') /* Line ended */
+        {
+            lines[line_num] = last_line; /* Store line */
+            last_line = &text[i + 1]; /* Next line begins on i+1st position */
+            line_num++; /* Increment line number */
+        }
+
+    /* Allocate struct */
+    LineFileReader *lfreader = (LineFileReader*) calloc(1, sizeof(LineFileReader));
+
+    /* Store file contents */
+    *lfreader = {
+            .text = (const char*) text,
+            .text_len = text_len,
+            .lines = (const char* const *) lines,
+            .line_count = line_count
+        };
+    return lfreader;
 }
 
-int next_line(FileReader *tf, int bufsize, char *buffer)
+void close_reader(const LineFileReader *lfreader)
 {
-    assert(tf != NULL);
-    if (tf == NULL)
-    {
-        errno = EINVAL;
-        return -2;
-    }
-
-    assert(buffer != NULL);
-    if (buffer == NULL)
-    {
-        errno = EDESTADDRREQ;
-        return -2;
-    }
-
-    if (feof(tf->fd)) /* already finished reading file */
-        return EOF;
-
-    fgets(buffer, bufsize, tf->fd);
-
-    if (ferror(tf->fd)) /* problem when reading file */
-    {
-        errno = EIO;
-        return -2;
-    }
-
-    tf->line++;
-
-    if (feof(tf->fd)) /* last line read */
-        return EOF;
-    if (strchr(buffer, '\n') == NULL) /* did not read to the end */
-    {
-        skip_line(tf->fd);
-        errno = EOVERFLOW;
-        return -2;
-    }
-    return 0;
-}
-
-void close_file(FileReader *tf)
-{
-    assert(tf != NULL);
-    if (tf == NULL)
-    {
-        errno = EINVAL;
+    if (lfreader == NULL)
         return;
-    }
 
-    fclose(tf->fd);
-    free(tf);
+    munmap((char *)lfreader->text, lfreader->text_len);
+    free((char **)lfreader->lines);
+    free((void *)lfreader);
 }

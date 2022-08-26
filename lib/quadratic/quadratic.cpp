@@ -6,7 +6,7 @@
 
 static int solve_linear_unsafe(double a, double b, EQUATION_RESULT(1) *result);
 
-EquationResultBase *generic_result(int root_count)
+EquationResultBase *generic_result(size_t root_count)
 {
     return (EquationResultBase*) calloc(1,
         sizeof(EquationResultBase) + root_count*sizeof(double)
@@ -20,9 +20,6 @@ int solve_quadratic(double a, double b, double c,
     assert(result != NULL);
 
     /* check for valid coefficients */
-    assert(isfinite(a));
-    assert(isfinite(b));
-    assert(isfinite(c));
     if (!isfinite(a) || !isfinite(b) || !isfinite(c))
     {
         errno = EINVAL;
@@ -69,7 +66,6 @@ int solve_linear(double a, double b, EQUATION_RESULT(1) *result)
     assert(result != NULL);
 
     /* check for valid coefficients */
-    assert(isfinite(a) && isfinite(b));
     if (!isfinite(a) || !isfinite(b))
     {
         errno = EINVAL;

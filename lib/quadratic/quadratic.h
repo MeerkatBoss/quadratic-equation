@@ -92,7 +92,7 @@ DEFINE_EQUATION_RESULT(2);
  * @param[in] root_count - number of roots
  * @return Allocated struct
  */
-EquationResultBase *generic_result(int root_count);
+EquationResultBase *generic_result(size_t root_count);
 
 /**
  * @brief Solves equations ax^2 + bx + c = 0
