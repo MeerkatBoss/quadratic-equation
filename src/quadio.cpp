@@ -55,10 +55,11 @@ int interactive_input(double *a, double *b, double *c)
     printf("Please, enter coefficients a, b and c\n");
 
     /* repeat input until success */
-    while (scanf(" %lg %lg %lg", a, b, c) != 3 ||
-            ! isfinite(*a) ||
-            ! isfinite(*b) ||
-            ! isfinite(*c))
+    while (!(scanf(" %lg %lg %lg", a, b, c) == 3 && /* At least 3 numbers */
+            /* valid numbers */
+            isfinite(*a) &&
+            isfinite(*b) &&
+            isfinite(*c)))
     {
         if (skip_line(stdin) == FILE_END) /* no further input */
             return EOF;

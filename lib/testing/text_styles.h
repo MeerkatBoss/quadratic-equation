@@ -1,3 +1,13 @@
+/**
+ * @file text_styles.h
+ * @author MeerkatBoss
+ * @brief Contains color styles for text
+ * @version 0.1
+ * @date 2022-08-26
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #ifndef TEXT_STYLES_H
 #define TEXT_STYLES_H
 
