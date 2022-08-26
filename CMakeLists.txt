@@ -26,4 +26,8 @@ add_subdirectory(lib/utils)
 
 add_subdirectory(lib/quadratic)
 
+add_subdirectory(lib/testing)
+
 add_subdirectory(src)
+
+add_subdirectory(tests)

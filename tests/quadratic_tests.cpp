@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "file_reader.h"
 #include "quadratic_tests.h"
-#include "../src/quadratic.h"
+#include "quadratic.h"
+#include "io_utils.h"
 
 #define BUFLEN 1000
 

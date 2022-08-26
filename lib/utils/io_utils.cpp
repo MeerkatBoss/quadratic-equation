@@ -1,10 +1,24 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "io_utils.h"
 #include <assert.h>
 #include <errno.h>
-#include "../src/quadio.h"
-#include "file_reader.h"
+#include <stdlib.h>
+#include <string.h>
+
+enum line_skip_status skip_line(FILE *fd)
+{
+    while (1)
+    {
+        switch(getc(fd))
+        {
+            case EOF:
+                return FILE_END;
+            case '\n':
+                return LINE_END;
+            default:
+                break;
+        }
+    }
+}
 
 struct FileReader
 {
@@ -101,4 +115,3 @@ void close_file(FileReader *tf)
     fclose(tf->fd);
     free(tf);
 }
-

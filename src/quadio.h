@@ -20,21 +20,6 @@
  */
 void show_help(void);
 
-enum line_skip_status
-{
-    LINE_END = 0,
-    FILE_END = -1
-};
-
-/**
- * @brief Reads and discards all symbols until '\\n'
- * from stream
- * 
- * @param[in] fd - file descriptor of a stream
- * @return 0 upon success; EOF upon encountering end-of-file
- */
-enum line_skip_status skip_line(FILE *fd);
-
 /**
  * @brief Reads double-precision floating-point numbers
  * from string

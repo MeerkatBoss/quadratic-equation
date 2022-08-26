@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <math.h>
 #include "quadio.h"
+#include "io_utils.h"
 
 void show_help(void)
 {
@@ -16,22 +17,6 @@ void show_help(void)
     printf("%s", MESSAGE);
 }
 
-
-enum line_skip_status skip_line(FILE *fd)
-{
-    while (1)
-    {
-        switch(getc(fd))
-        {
-            case EOF:
-                return FILE_END;
-            case '\n':
-                return LINE_END;
-            default:
-                break;
-        }
-    }
-}
 
 int extract_doubles(int argc, char** argv, ...)
 {
