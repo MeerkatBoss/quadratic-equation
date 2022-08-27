@@ -16,6 +16,47 @@ static struct
 } __current_testing_state 
     {.tests_total = 0, .tests_failed = 0, .state = TEST_NONE};
 
+struct __test_node
+{
+    void (*test_func) (void);
+    const char *test_name;
+    __test_node *next;
+};
+
+static struct
+{
+    __test_node *head;
+    __test_node *tail;
+} __test_list = {.head = NULL, .tail = NULL};
+
+void run_all_tests(void)
+{
+    __test_node *tnode = __test_list.head;
+    while((tnode))
+    {
+        __testing_init_test(tnode->test_name);
+        tnode->test_func();
+        __testing_collect_test(tnode->test_name);
+        __test_list.head = tnode->next;
+        free(tnode);
+        tnode = __test_list.head;
+    }
+}
+
+int __testing_add_test(void (*test) (void), const char* test_name)
+{
+    struct __test_node *node = (struct __test_node*) calloc(1, sizeof(__test_node));
+    *node = {.test_func = test, .test_name = test_name, .next = NULL};
+    if (__test_list.head == NULL)
+    {
+        __test_list.head = __test_list.tail = node;
+        return 0;
+    }
+    __test_list.tail->next = node;
+    __test_list.tail = node;
+    return 0;
+}
+
 void __testing_assert_true(int condition, const char* condition_str)
 {
     if (!(condition))

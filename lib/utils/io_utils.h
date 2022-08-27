@@ -29,8 +29,6 @@ enum line_skip_status
  */
 enum line_skip_status skip_line(FILE *fd);
 
-/* TODO: Use buffer for file contents */
-
 /**
  * @brief Wraps FILE*, provides access to line-by-line
  * reading of a file. Counts lines automatically,

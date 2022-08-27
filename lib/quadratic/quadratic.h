@@ -84,7 +84,7 @@ DEFINE_EQUATION_RESULT(2);
  */
 #define local_generic_result(num)  \
     ((EquationResultBase*) alloca( \
-        sizeof(EquationResultBase) + (num)*sizeof(double))))
+        sizeof(EquationResultBase) + (num)*sizeof(double)))
 
 /**
  * @brief Allocate struct with dynamic root count

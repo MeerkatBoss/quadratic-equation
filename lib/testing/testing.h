@@ -21,6 +21,8 @@ void __testing_collect_test(const char* name);
 void __testing_init_test_case(void);
 void __testing_collect_test_case(void);
 int __testing_check_test_case_running(void);
+int __testing_add_test(void (*test)(void), const char* test_name);
+void run_all_tests(void);
 
 /**
  * @brief Gets name of file, containing tests for func
@@ -36,19 +38,10 @@ int __testing_check_test_case_running(void);
  * 
  * @param[in] func - tested function
  */
-#define TEST(func) void __TEST_NAME(func)(void)
-
-/**
- * @brief Executes test for function
- * 
- * @param[in] func - tested function
- */
-#define RUN_TEST(func) do           \
-{                                   \
-    __testing_init_test(#func);     \
-    __TEST_NAME(func)();            \
-    __testing_collect_test(#func);  \
-} while (0)
+#define TEST(func)\
+    void __TEST_NAME(func)(void);\
+    static int __init_##func = __testing_add_test(&__TEST_NAME(func), #func);\
+    void __TEST_NAME(func)(void)
 
 /**
  * @brief Defines testing case
@@ -63,7 +56,7 @@ int __testing_check_test_case_running(void);
 /**
  * @brief Interrupts execution of current test case
  */
-#define TEST_CASE_ABORT break
+#define TEST_CASE_ABORT continue
 
 /**
  * @brief If condition is false, prints Assertion failed message
