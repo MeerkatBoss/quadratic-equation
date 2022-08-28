@@ -31,3 +31,7 @@ add_subdirectory(lib/testing)
 add_subdirectory(src)
 
 add_subdirectory(tests)
+
+install(TARGETS quad
+        RUNTIME
+        CONFIGURATIONS Release)
