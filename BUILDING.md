@@ -23,8 +23,7 @@
     ```
 4. Test the build
     ```
-    $ cd ..
-    $ build/tests/tests
+    $ make check
     ```
 5. Install Quadratic Equation
     ```

@@ -101,19 +101,8 @@ int interactive_input(double *a, double *b, double *c)
         
         printf("Please enter 3 (three) numbers\n");
     } while (1);
-    
-    /* repeat input until success */
-    while (!(scanf(" %lg %lg %lg", a, b, c) == 3 && /* At least 3 numbers */
-            /* valid numbers */
-            isfinite(*a) &&
-            isfinite(*b) &&
-            isfinite(*c)))
-    {
-        if (skip_line(stdin) == FILE_END) /* no further input */
-            return EOF;
-        printf("Please enter 3 (three) numbers\n");
-    }
-    return 0;
+
+    assert(false && "Unreachable!");
 }
 
 void print_roots(EquationResultBase* result)

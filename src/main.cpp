@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     {
         case HELP_DISPLAYED:
             show_help();
-            return RETURN_SUCCESS;
+            [[fallthrough]];
         case USER_QUIT:
             return RETURN_SUCCESS;
         case USER_BAD_INPUT:

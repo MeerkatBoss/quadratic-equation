@@ -55,57 +55,42 @@ static void run_solver_tests(size_t n, const char* name) {
 static EquationTestCase *read_test_case(size_t n, const char *line)
 {
     int nread = 0;
-    /* Read coefficients */
     double *coeffs = (double *) calloc(n + 1u, sizeof(double));
-    for (size_t i = 0; i < n + 1; i++)
-    {
-        if (!sscanf(line, " %lg%n", &coeffs[i], &nread))
-        {
-            ASSERT_TRUE(0 && "Corrupted test file");
-            free(coeffs);
-            return NULL;
-        }
-        line += nread;
-    }
+    EquationResultBase *result = generic_result(n);
 
-    /* Read status */
+#define READ_VARIABLE(format, var_name) do              \
+{                                                       \
+    if (!sscanf(line, format "%n", &(var_name), &nread))\
+    {                                                   \
+        ASSERT_TRUE(0 && "Corrupted test file");        \
+        free(coeffs);                                   \
+        free(result);                                   \
+        return NULL;                                    \
+    }                                                   \
+    line += nread;                                      \
+} while (0)
+    
+    for (size_t i = 0; i < n + 1; i++)
+        READ_VARIABLE(" %lg ", coeffs[i]);
+
     int status = 0;
-    if (!sscanf(line, " >  %d | %n", &status, &nread))
-    {
-        ASSERT_TRUE(0 && "Corrupted test file");
-        free(coeffs);
-        return NULL;
-    }
-    line += nread;
+    READ_VARIABLE(" > %d | ", status);
 
     /* Read result */
-    EquationResultBase *result = generic_result(n);
     int nroots = 0;
-    if (!sscanf(line, " %d %n", &nroots, &nread))
-    {
-        ASSERT_TRUE(0 && "Corrupted test file");
-        free(coeffs);
-        free(result);
-        return NULL;
-    }
-    result->nroots = (enum root_count)nroots;
-    line += nread;
+    READ_VARIABLE(" %d ", nroots);
+    result->nroots = (enum root_count) nroots;
+
     for (size_t i = 0; i < n; i++)
-    {
-        if (!sscanf(line, " %lg%n", &result->roots[i], &nread))
-        {
-            ASSERT_TRUE(0 && "Corrupted test file");
-            free(coeffs);
-            free(result);
-            return NULL;
-        }
-        line += nread;
-    }
+        READ_VARIABLE(" %lg ", result->roots[i]);
 
     EquationTestCase *test_case = (EquationTestCase*) calloc(1,
                                     sizeof(EquationTestCase));
+
     *test_case = {.coeffs = coeffs, .status = status, .result = result};
     return test_case;
+
+#undef READ_VARIABLE
 }
 
 static int test_solver(size_t n,EquationTestCase *test_case)
@@ -117,13 +102,13 @@ static int test_solver(size_t n,EquationTestCase *test_case)
     int actual_status = 0;
     switch(n)
     {
-        case 1:
+        case EQ_LINEAR:
             actual_status = solve_linear(
                 test_case->coeffs[0],
                 test_case->coeffs[1],
                 (EQUATION_RESULT(1)*)actual_result);
             break;
-        case 2:
+        case EQ_QUADRATIC:
             actual_status = solve_quadratic(
                 test_case->coeffs[0],
                 test_case->coeffs[1],
