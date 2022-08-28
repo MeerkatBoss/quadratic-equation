@@ -28,7 +28,7 @@
 5. Install Quadratic Equation
     ```
     $ cd build
-    $ make install
+    $ sudo make install
     ```
 6. You can now run Quadratic Equation from command-line
     ```
@@ -38,5 +38,5 @@
 ## Uninstalling
 To uninstall Quadratic Equation run the following command from `build` directory:
 ```
-$ make uninstall
+$ sudo make uninstall
 ```
