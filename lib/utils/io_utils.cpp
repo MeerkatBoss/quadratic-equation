@@ -23,6 +23,17 @@ enum line_skip_status skip_line(FILE *fd)
     }
 }
 
+int skip_spaces_and_tabs(FILE *fd)
+{
+    int c = 0;
+    do
+    {
+        c = getc(fd);
+        if (!(c == ' ' || c == '\t'))
+            return c;
+    } while (1);
+}
+
 /**
  * @brief Maps file lines to memory
  * 
@@ -77,7 +88,7 @@ const LineFileReader *read_file(const char *path)
         return NULL;
 
     size_t line_count = 1;
-    for (int i = 0; i < text_len - 1; i++) /* NUL-terminate each line */
+    for (size_t i = 0; i < text_len - 1; i++) /* NUL-terminate each line */
         if (text[i] == '\n')
         {
             text[i] = '\0';
@@ -88,7 +99,7 @@ const LineFileReader *read_file(const char *path)
     char ** lines = (char**) calloc(line_count, sizeof(char*));
     char *last_line = text; /* Pointer to the beginning of last line */
     int line_num = 0;
-    for (int i = 0; i < text_len; i++)
+    for (size_t i = 0; i < text_len; i++)
         if (text[i] == '\0') /* Line ended */
         {
             lines[line_num] = last_line; /* Store line */

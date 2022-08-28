@@ -86,6 +86,22 @@ int interactive_input(double *a, double *b, double *c)
     printf("This program solves equations ax^2 + bx + c = 0\n");
     printf("Please, enter coefficients a, b and c\n");
 
+    do
+    {
+        int read = scanf(" %lg %lg %lg", a, b, c);
+        int next = skip_spaces_and_tabs(stdin);
+
+        if (next == EOF)
+            return EOF;
+
+        if (read == 3 && /* 3 numbers read */
+            next == '\n' && /* line ended */
+            isfinite(*a) && isfinite(*b) && isfinite(*c) /* valid numbers */)
+            return 0;
+        
+        printf("Please enter 3 (three) numbers\n");
+    } while (1);
+    
     /* repeat input until success */
     while (!(scanf(" %lg %lg %lg", a, b, c) == 3 && /* At least 3 numbers */
             /* valid numbers */
@@ -124,4 +140,3 @@ void print_roots(EquationResultBase* result)
             break;
     }
 }
-

@@ -30,6 +30,15 @@ enum line_skip_status
 enum line_skip_status skip_line(FILE *fd);
 
 /**
+ * @brief Skips all ' ' and '\\t' symbols in stream
+ * 
+ * @param fd - file descriptor of a stream
+ * @return - next character, which is not ' ' or '\\t'. Upon
+ * encountering end-of-file returns EOF
+ */
+int skip_spaces_and_tabs(FILE *fd);
+
+/**
  * @brief Wraps FILE*, provides access to line-by-line
  * reading of a file. Counts lines automatically,
  * starting at 0
