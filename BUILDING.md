@@ -34,3 +34,9 @@
     ```
     $ quad
     ```
+
+## Uninstalling
+To uninstall Quadratic Equation run the following command from `build` directory:
+```
+$ make uninstall
+```
