@@ -3,6 +3,9 @@
 This program finds real roots of a given second-degree polynomial, solving
 equations $ax^2 + bx + c = 0$ given the coefficients $a$, $b$ and $c$.
 
+## Installation
+For installation info, read [here](BUILDING.md)
+
 ## Non-interactive mode
 Coefficients can be provided via command-line arguments:
 
