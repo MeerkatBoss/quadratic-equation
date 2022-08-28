@@ -26,14 +26,13 @@ Please, enter coefficients a, b and c
 ```
 Program will prompt the user to enter three floating-point numbers. As long as
 invalid values are provided, the program will repeatedly ask user for valid
-input. Upon receiving end-of-file signal, the program will terminate with exit
-code 0.
+input. Upon receiving end-of-file signal, the program will stop its execution.
 
 ## Getting help
 Help message is provided whenever program terminates abnormally due to invalid
-input. User can manually get help message, using `-h` flag
+input. User can manually get help message, using flag `-h` or `--help`
 ```
-quad -h
+quad --help
 Usage:
     quad - to launch program in interactive mode
     quad <a> <b> <c> - to get roots of an equation ax^2 + bx + c = 0
