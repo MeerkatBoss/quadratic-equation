@@ -38,9 +38,9 @@ void run_all_tests(void);
  * 
  * @param[in] func - tested function
  */
-#define TEST(func)\
-    void __TEST_NAME(func)(void);\
-    static int __init_##func = __testing_add_test(&__TEST_NAME(func), #func);\
+#define TEST(func)                                                              \
+    void __TEST_NAME(func)(void);                                               \
+    static int __init_##func = __testing_add_test(&__TEST_NAME(func), #func);   \
     void __TEST_NAME(func)(void)
 
 /**
