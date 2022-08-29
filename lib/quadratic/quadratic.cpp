@@ -44,6 +44,7 @@ int solve_quadratic(double a, double b, double c,
     if (d_sign == 0) /* single root */
     {
         result->roots[0] = -b / (2 * a);
+        clamp_to_zero(&result->roots[0]);
         result->base.nroots = SINGLE_ROOT;
         return SOLVE_SUCCESS;
     }

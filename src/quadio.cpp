@@ -56,7 +56,7 @@ int extract_doubles(int argc, char** argv, ...)
 
     va_start(args, argv);
 
-    for (int i = 1; i < argc; i++)
+    for (int i = 0; i < argc; i++)
     {
         double *arg = NULL;
 
